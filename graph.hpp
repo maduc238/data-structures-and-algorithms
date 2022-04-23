@@ -18,7 +18,7 @@ using namespace std;
  * G.add_node(2);
  * 
  * Create a new edge:
- * G.add_edge(0,1);
+ * G.add_edge(0,1, 0);  // weight = 0
  * 
  * Delete a node:
  * G.delete_node(2);
