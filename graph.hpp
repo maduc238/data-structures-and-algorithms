@@ -73,6 +73,7 @@ class Node2{
                 a = a->next;
             }
             if (a->data == data){
+                if (this->data != data)
                 cout << "Warning: This node already exists in graph\n";
                 return;
             }
@@ -241,16 +242,52 @@ class Graph{
             return Result;
         }
 
+        /* Insert a new edge in this graph without weight. The two edges in these variables must exist in graph.
+        If node 2 and 3 are already existed in graph: (The weight will be set 0)
+        add_edge(2, 3); */
+        void add_edge(int node1, int node2){
+            Node2* a = this->root;
+            int c = 0;
+            int n_max = max(node1,node2);
+            bool Result = false;
+            // A checking loop, consider available nodes
+            while (a != NULL && a->data <= n_max){
+                if (a->data == node1 || a->data == node2)
+                    c++;
+                a = a->next;
+            }
+            if (c != 2 && node1 != node2){
+                cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                return;
+            }
+            a = this->root;
+            while (a->data <= node1 || a->data <= node2){
+                if (a->data == node1) a->_add_node(node2, 0);
+                if (a->data == node2) a->_add_node(node1, 0);
+                if (a->next == NULL) break;
+                a = a->next;
+            }
+        }
+
         /* Insert a new edge in this graph. The two edges in these variables must exist in graph.
         If node 2 and 3 are already existed in graph and weight is 4:
         add_edge(2, 3, 4); */
         void add_edge(int node1, int node2, int weight){
-            // Need to change this
-            if (available_node(node1) == false || available_node(node2) == false){
-                cout << "Waring: There is a node that does not exist in this graph\n";
+            Node2* a = this->root;
+            int c = 0;
+            int n_max = max(node1,node2);
+            bool Result = false;
+            // A checking loop, consider available nodes
+            while (a != NULL && a->data <= n_max){
+                if (a->data == node1 || a->data == node2)
+                    c++;
+                a = a->next;
+            }
+            if (c != 2 && node1 != node2){
+                cout << "Waring: There is some node(s) that does not exist in this graph\n";
                 return;
             }
-            Node2* a = this->root;
+            a = this->root;
             while (a->data <= node1 || a->data <= node2){
                 if (a->data == node1) a->_add_node(node2, weight);
                 if (a->data == node2) a->_add_node(node1, weight);
@@ -350,4 +387,30 @@ class Graph{
         
         /* DFS traversal of the vertices reachable from node */
         void deep_first_search(int node);
+
+        /* A void function insert a sequence numbers of nodes in graph, starting from 0 by default.
+        This graph must be empty, or else it will break and stop the initialization.
+        Graph will have node 0,1,...,7 (with 8 nodes):
+        add_sequence_node(8); */
+        void add_sequence_node(int number_node){
+            if (this->root != NULL){
+                // This graph did not empty
+                cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
+                return;
+            }
+            else if (number_node < 1){
+                cout << "Warning: number_node must be greater than 1\n";
+                return;
+            }
+            // Else, initial new node
+            this->root = new Node2();
+            this->root->data = 0;
+            Node2* a = this->root;
+            for (int i=1; i<number_node; i++){
+                a->next = new Node2();
+                a->next->data = i;
+                a = a->next;
+            }
+            this->count += number_node;
+        }
 };
