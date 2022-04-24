@@ -1,4 +1,5 @@
 #include <iostream>
+#include "sort.hpp"
 using namespace std;
 
 /*****************************************************************************
@@ -16,6 +17,7 @@ using namespace std;
  * G.add_node(1);
  * G.add_node(0);
  * G.add_node(2);
+ * (Or you can run function: add_sequence_node, add_node_from,...)
  * 
  * Create a new edge:
  * G.add_edge(0,1, 0);  // weight = 0
@@ -177,6 +179,8 @@ void _del(Node2* b, Node2* &a, int node){
 
 /* A Graph class. This class represents a undirected graph using adjacency list representation */
 class Graph{
+    /* The class members declared as private can be accessed only by the functions inside the class.
+    They are not allowed to be accessed directly by any object or function outside the class */
     private:
         // The first pointer in linked list node structure
         Node2* root;
@@ -184,7 +188,7 @@ class Graph{
         int count;
 
     public:
-        // Constructor
+        // Constructor in class Graph
         Graph(){
             this->root = NULL;
             this->count = 0;
@@ -228,15 +232,15 @@ class Graph{
             }
         }
 
-        /* Check a node in a graph. If the graph have 'node', function call
+        /* Check a node in a graph. If the graph have node n, function call
         back true, else if is node available, function return false */
-        bool available_node(int node){
+        bool available_node(int n){
             Node2* a = this->root;
             bool Result = false;
-            while (a != NULL && a->data < node){
+            while (a != NULL && a->data < n){
                 a = a->next;
             }
-            if (a != NULL &&  a->data == node){
+            if (a != NULL &&  a->data == n){
                 Result = true;
             }
             return Result;
@@ -298,7 +302,7 @@ class Graph{
         
         /* A helper function, shows the total number of nodes in the graph */
         void print_count(){
-            cout << this->count;
+            cout << this->count <<"\n";
         }
 
         /* A void function print all graph's data: nodes and edges in a node struct
@@ -309,14 +313,14 @@ class Graph{
             hidden_function::print_all_node(this->root);
         }
 
-        /* Given a node name, this function will delete this node from the graph.
+        /* Given a node name n, this function will delete this node from the graph.
         If node 2 is already existed in graph:
         delete_node(2); */
-        void delete_node(int node){
+        void delete_node(int n){
             Node2* a = this->root;
             bool check = false;
-            while (a->next != NULL && a->next->data <= node){
-                if (a->next->data == node){
+            while (a->next != NULL && a->next->data <= n){
+                if (a->next->data == n){
                     check = true;
                     break;
                 }
@@ -325,20 +329,20 @@ class Graph{
             // Delete this node
             if (check == true){
                 if (a->next->edges != NULL){
-                    hidden_function::_del(this->root, a->next, node);
+                    hidden_function::_del(this->root, a->next, n);
                 }
                 this->count--;
                 a->next = a->next->next;
             }
-            else if (a->data == node){
+            else if (a->data == n){
                 if (this->root->edges != NULL){
-                    hidden_function::_del(this->root, this->root, node);
+                    hidden_function::_del(this->root, this->root, n);
                 }
                 this->count--;
                 this->root = this->root->next;
                 }
             else
-                cout << "Warning: Can't find node " << node << " in this graph\n";
+                cout << "Warning: Can't find node " << n << " in this graph\n";
         }
 
         /* Delete a edge connected by two nodes */
@@ -382,12 +386,6 @@ class Graph{
             return result;
         }
 
-        /* BFS traversal of the vertices reachable from node */
-        void breath_first_search(int node);
-        
-        /* DFS traversal of the vertices reachable from node */
-        void deep_first_search(int node);
-
         /* A void function insert a sequence numbers of nodes in graph, starting from 0 by default.
         This graph must be empty, or else it will break and stop the initialization.
         Graph will have node 0,1,...,7 (with 8 nodes):
@@ -413,4 +411,63 @@ class Graph{
             }
             this->count += number_node;
         }
+
+        /* Returns an iterator over successor nodes of n.
+        If graph have node 3 and its neighbors is 1,2,5:
+        print_neighbors(3);
+        -> 1 - 2 - 5 */
+        void print_neighbors(int n){
+            Node2* a = this->root;
+            bool check = false;
+            while (a != NULL && a->data <= n){
+                if (a->data == n){
+                    check = true;
+                    break;
+                }
+                a = a->next;
+            }
+            if (check == false){
+                cout << "Warning: Can't find node " << n << " in this graph\n";
+                return;
+            }
+            // Start to print neighbors
+            hidden_function::print_all_edge(a->edges);
+        }
+
+        /* A void function insert node to graph from a int string: nodes[], with n_nodes is
+        the sizes of string nodes[]. This graph must be empty, or else it will break and stop the initialization.
+        This function will automatically sort nodes[] and eliminate duplicate nodes.
+        Example: nodes[] = {5,2,4,1,3,6,1,0};
+        G.add_nodes_from(nodes,8); */
+        void add_nodes_from(int nodes[], int n_nodes){
+            if (this->root != NULL){
+                // This graph did not empty
+                cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
+                return;
+            }
+            else if (n_nodes < 1){
+                cout << "Warning: number_node must be greater than 1\n";
+                return;
+            }
+            // Using heap sort to sort the array nodes[] from sort.hpp
+            heap_sort(nodes, n_nodes);
+            // Else, initial new node
+            this->root = new Node2();
+            this->root->data = nodes[0];
+            this->count++;
+            Node2* a = this->root;
+            for (int i=1; i<n_nodes; i++){
+                if (nodes[i-1] == nodes[i]) continue;
+                a->next = new Node2();
+                a->next->data = nodes[i];
+                a = a->next;
+                this->count++;
+            }
+        }
+        
+        /* BFS traversal of the vertices reachable from node n */
+        void breath_first_search(int n);
+        
+        /* DFS traversal of the vertices reachable from node n */
+        void deep_first_search(int n);
 };
