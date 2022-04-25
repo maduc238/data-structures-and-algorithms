@@ -313,6 +313,38 @@ class Graph{
             hidden_function::print_all_node(this->root);
         }
 
+        /*  A void function print all nodes in graph G. If graph G have nodes 2,3,4,6,7:
+        G.print_nodes();
+        -> All nodes: 2, 3, 4, 6, 7 */
+        void print_nodes(){
+            Node2* a = this->root;
+            cout << "All nodes: ";
+            while (a != NULL){
+                cout << a->data;
+                if (a->next != NULL) cout << ", ";
+                a = a->next;
+            }
+            cout << "\n";
+        }
+
+        /*  A void function print all nodes in graph G. If graph G have egdes (0-1), (1-3), (3,2), (2,1):
+        G.print_edges();
+        -> All edges: (0 - 1), (1 - 2), (1 - 3), (2 - 3) */
+        void print_edges(){
+            Node2* a = this->root;
+            cout << "All edges: ";
+            while (a != NULL){
+                while (a->edges != NULL){
+                    if (a->data <= a->edges->data)
+                        cout <<"("<<a->data<<" - "<<a->edges->data<<")";
+                    if (a->edges->next != NULL && a->data <= a->edges->next->data) cout<< ", ";
+                    a->edges = a->edges->next;
+                }
+                a = a->next;
+            }
+            cout << "\n";
+        }
+
         /* Given a node name n, this function will delete this node from the graph.
         If node 2 is already existed in graph:
         delete_node(2); */
@@ -464,7 +496,7 @@ class Graph{
                 this->count++;
             }
         }
-        
+
         /* BFS traversal of the vertices reachable from node n */
         void breath_first_search(int n);
         
