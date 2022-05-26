@@ -26,9 +26,10 @@ int main(){
     G.add_node(6);
     G.add_edge(3,6, 8);
     
-    G.print_graph_data();
-    cout << "----------------\n";
-    G.delete_node(2);
-    G.print_graph_data();
+    // G.print_graph_data();
+    // cout << "----------------\n";
+    // G.delete_node(2);
+    // G.print_graph_data();
+    G.Dijkstra(0);
     return 0;
 }

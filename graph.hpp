@@ -533,11 +533,13 @@ class Graph{
         void deep_first_search(int n);
 
         void Dijkstra(int n){
-            int node_idx[this->count]; 
+            int node_idx[this->count];
+            int F[this->count];
             Node2* a = this->root;
             int i = 0;
             while (a != NULL){
                 node_idx[i] = a->data;
+                F[i] = 0;
                 a = a->next;
                 i ++;
             }
@@ -545,18 +547,41 @@ class Graph{
             int inf = 999;
             int dist[this->count];
             int prev[this->count];
+            F[0] = 1;   // v0 in F
             dist[0] = 0;
+            prev[0] = -1;
             for (int i=1; i<this->count; i++){
                 if (is_near(n, node_idx[i])){
                     dist[i] = edge_weight(n, node_idx[i]);
                     prev[i] = n;
                 }
-                else dist[i] = inf;
+                else{
+                    dist[i] = inf;
+                    prev[i] = -1;
+                }
             }
-
-            // thuat toan...
             for (int i=1; i<this->count; i++){
-                cout << "processing";
+                int dist_min = inf;
+                int m_min = -1;
+                for (int m=1; m<this->count; m++){
+                    if ((F[m] == 0) && (dist[m] < dist_min)){
+                        dist_min = dist[m];
+                        m_min = m;}
+                }
+                if (m_min == -1) continue;
+                F[m_min] = 1;
+                for (int k=1; k<this->count; k++){
+                    if ((F[k] == 0) && (is_near(node_idx[m_min],node_idx[k])) && (dist[k] > (dist[m_min] + edge_weight(node_idx[m_min],node_idx[k])))){
+                        dist[k] = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
+                        prev[k] = node_idx[m_min];
+                    }
+                }
             }
+            // print prev here
+            for (int i=0; i<this->count; i++){
+                cout << prev[i] << " , ";
+            }
+            // print step…
+            
         }
 };
