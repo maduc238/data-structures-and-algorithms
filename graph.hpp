@@ -497,9 +497,66 @@ class Graph{
             }
         }
 
+        /* Kiem tra n1 va n2 xem ca hai co gan nhau khong? */
+        bool is_near(int n1, int n2){
+            Node2* a = this->root;
+            bool check = false;
+            while (a != NULL && a->data <= n1){
+                if (a->data == n1){
+                    check = true;
+                    break;
+                }
+                a = a->next;
+            }
+            if (check == false){
+                return false;
+            }
+            check = false;
+            Node* b = a->edges;
+            while (b != NULL && b->data <= n2){
+                if (b->data == n2){
+                    check = true;
+                    return true;
+                }
+                b = b->next;
+            }
+            if (check == false){
+                return false;
+            }
+            return false;
+        }
+
         /* BFS traversal of the vertices reachable from node n */
         void breath_first_search(int n);
-        
+
         /* DFS traversal of the vertices reachable from node n */
         void deep_first_search(int n);
+
+        void Dijkstra(int n){
+            int node_idx[this->count]; 
+            Node2* a = this->root;
+            int i = 0;
+            while (a != NULL){
+                node_idx[i] = a->data;
+                a = a->next;
+                i ++;
+            }
+            // cai dat
+            int inf = 999;
+            int dist[this->count];
+            int prev[this->count];
+            dist[0] = 0;
+            for (int i=1; i<this->count; i++){
+                if (is_near(n, node_idx[i])){
+                    dist[i] = edge_weight(n, node_idx[i]);
+                    prev[i] = n;
+                }
+                else dist[i] = inf;
+            }
+
+            // thuat toan...
+            for (int i=1; i<this->count; i++){
+                cout << "processing";
+            }
+        }
 };
