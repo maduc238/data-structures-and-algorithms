@@ -1,36 +1,37 @@
 #include <iostream>
 #include "sort.hpp"
 using namespace std;
+#define MAX 50
 
 /*****************************************************************************
  * The graph algorithm base to Networkx in python
- * 
+ *
  * Task need to do:
  * breath_first_search and deep_first_search
  * Dijkstra, Bellman-Ford algorithm
- * 
+ *
  * To run these functions:
  * Initial a new graph:
  * Graph G;
- * 
+ *
  * Create a new node:
  * G.add_node(1);
  * G.add_node(0);
  * G.add_node(2);
  * (Or you can run function: add_sequence_node, add_node_from,...)
- * 
+ *
  * Create a new edge:
  * G.add_edge(0,1, 0);  // weight = 0
- * 
+ *
  * Delete a node:
  * G.delete_node(2);
- * 
+ *
  * Delete a edge:
  * G.delete_edge(0,1);
- * 
+ *
  * Print all graph data:
  * G.print_graph_data();
- * 
+ *
  * And many more functions to do...
 *****************************************************************************/
 
@@ -131,6 +132,62 @@ class Node2{
                 cout << "Warning: Can't find node " << node << " in this graph\n";
         }
 };
+struct queue {
+    int element[MAX];
+    int front;
+    int rear;
+};
+struct queue* create_queue() {
+    struct queue* q = new struct queue[sizeof(struct queue)];
+    q->front = -1;
+    q->rear = -1;
+    return q;
+}
+int isEmpty(struct queue* q) {
+    if (q->rear == -1)
+        return 1;
+    else
+        return 0;
+}
+
+void add_element_into_queue(struct queue* q, int value) {
+    if (q->rear == MAX - 1)
+        printf("\nQueue is full.");
+    else {
+        if (q->front == -1)
+            q->front = 0;
+        q->rear++;
+        q->element[q->rear] = value;
+  }
+}
+
+int remove_element_from_queue(struct queue* q) {
+    int item;
+    if (isEmpty(q)) {
+        printf("\nQueue is empty.");
+        item = -1;
+    }
+    else {
+        item = q->element[q->front];
+        q->front++;
+        if (q->front > q->rear) {
+            q->front = q->rear = -1;
+        }
+    }
+    return item;
+}
+
+void print_queue(struct queue* q) {
+    int i = q->front;
+    if (isEmpty(q)) {
+        printf("Hàng đợi rỗng");
+  } else {
+        printf("\nCác phần tử trong hàng đợi là: ");
+        for (i = q->front; i < q->rear + 1; i++) {
+            printf("%d ", q->element[i]);
+        }
+    }
+}
 
 namespace hidden_function{
 /* A helper function to print all linked list in the data structure */
@@ -245,6 +302,14 @@ class Graph{
             }
             return Result;
         }
+        //Acess a node in graph.
+        Node2* acess_node(int n){
+            Node2* a = this->root;
+            while(a!=NULL &&a->data<n){
+                a=a->next;
+            }
+            return a->next;
+        }
 
         /* Insert a new edge in this graph without weight. The two edges in these variables must exist in graph.
         If node 2 and 3 are already existed in graph: (The weight will be set 0)
@@ -299,7 +364,7 @@ class Graph{
                 a = a->next;
             }
         }
-        
+
         /* A helper function, shows the total number of nodes in the graph */
         void print_count(){
             cout << this->count <<"\n";
@@ -526,22 +591,74 @@ class Graph{
             return false;
         }
 
+        void search(int n){
+            Node2* a = this->root;
+            int nodes[this->count];
+            int i = 0, j = 0;
+            while (i < this->count){
+                if (a->data < n){
+                    nodes[this->count - i - 1] = a->data;
+                    i++;
+                }
+                else {
+                    nodes[j] = a->data;
+                    i++;
+                    j++;
+                }
+                a = a->next;
+            }
+            for (int i=0; i<this->count; i++){
+                cout << nodes[i] << "-";
+            }
+        }
+
         /* BFS traversal of the vertices reachable from node n */
-        void breath_first_search(int n);
+        void breath_first_search(int n){
+            struct queue* q = create_queue();
+            add_element_into_queue(q, n);
+            while (!isEmpty(q)) {
+                //print_queue(q);
+                int currentVertex = remove_element_from_queue(q);
+                printf("%d da duoc duyet\n", currentVertex);
+                Node* temp = this->acess_node(n)->edges;
+                while ( temp->next!=NULL) {
+                    add_element_into_queue(q, temp->data);
+                    temp = temp->next;
+                }
+              }
+        }
+
 
         /* DFS traversal of the vertices reachable from node n */
         void deep_first_search(int n);
 
-        void Dijkstra(int n){
+        void path(int node, int node_idx[], int prev[]){
+            int i = 0;
+            if (node == 0 || node == -1) return;
+            while (node != node_idx[i] && i < this->count){
+                i++;
+            }
+            cout << node_idx[i] << " - " ;
+            path(prev[i], node_idx, prev);
+
+        }
+
+        void Dijkstra(int n_dest, int n){
+            Node2* a = this->root;
             int node_idx[this->count];
             int F[this->count];
-            Node2* a = this->root;
-            int i = 0;
-            while (a != NULL){
-                node_idx[i] = a->data;
+            int i = 0, j = 0;
+            while (i < this->count){
+                if (a->data < n){
+                    node_idx[this->count - i - 1] = a->data;
+                }
+                else {
+                    node_idx[j] = a->data;
+                    j++;
+                }
+                i++;
                 F[i] = 0;
                 a = a->next;
-                i ++;
             }
             // cai dat
             int inf = 999;
@@ -577,11 +694,17 @@ class Graph{
                     }
                 }
             }
+            for (int i=0; i<this->count; i++){
+                cout << node_idx[i] << " , ";
+            }
+            cout << "\n";
             // print prev here
             for (int i=0; i<this->count; i++){
                 cout << prev[i] << " , ";
             }
-            // print step…
-            
+            cout << "\n";
+            // cout << node_idx[1] << " , " << prev[1] << " , ";
+
+            path(n_dest, node_idx, prev);
         }
 };
