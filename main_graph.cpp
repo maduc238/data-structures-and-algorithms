@@ -25,7 +25,14 @@ int main(){
     G.add_edge(3,4, 7);
     G.add_node(6);
     G.add_edge(3,6, 8);
-    
+    int i,j;
+    for(i=0;i<G.counts();i++){
+        printf("%d\n",G.breath_first_search(0)[i]);
+    }
+    for(j=0;j<G.counts();j++){
+        printf("%d\n",*(G.deep_first_search(0)+j));
+    }
+
     // G.print_graph_data();
     // cout << "----------------\n";
     // G.delete_node(2);
