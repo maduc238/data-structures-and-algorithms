@@ -8,7 +8,9 @@
  * The graph algorithm base to Networkx in python
  *
  * Task need to do:
- * Bellman-Ford algorithm
+ * Floyd algorithm
+ * Find graph cycle
+ * Spanning tree: Kruskal and Dijkstra algorithm
  *
  * To run these functions:
  * Initial a new graph:
