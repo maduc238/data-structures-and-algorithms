@@ -8,8 +8,7 @@
  * The graph algorithm base to Networkx in python
  *
  * Task need to do:
- * breath_first_search and deep_first_search
- * Dijkstra, Bellman-Ford algorithm
+ * Bellman-Ford algorithm
  *
  * To run these functions:
  * Initial a new graph:
@@ -37,7 +36,7 @@
 *****************************************************************************/
 
 /* Configure data type for weight
-You can change it as: int, float, double,...
+You can change it as: int, unsigned int, float, double,...
 */
 typedef float weight_type;
 
@@ -669,11 +668,53 @@ class Graph{
                 std::cout << dist[i] << " , ";
             }
             std::cout << endl;*/
+            std::cout << "Dijkstra algorithm:\n";
             for (int i=1; i<this->count; i++){
                 std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
                 hidden_function::print_path(i, node_idx, prev);
                 std::cout << n << "\n";
             }
+        }
 
+        /* The main function that finds shortest distances from src to all
+        other vertices using Bellman-Ford algorithm.
+        */
+        void Bellman_Ford(int n){
+            int node_idx[this->count];
+            int *p;
+            p = breath_first_search(n);
+            for (int i=0; i<this->count; i++){
+                node_idx[i] = *(p+i);
+            }
+            delete[] p;
+            weight_type dist[this->count];
+            int prev[this->count];
+            dist[0] = 0;
+            prev[0] = -1;
+            for (int i=1; i<this->count; i++){
+                dist[i] = inf;
+            }
+            bool key = false;
+            while (key == false){
+                key = true;
+                for (int u=0; u<this->count; u++){
+                    for (int v=u+1; v<this->count; v++){
+                        if (is_near(node_idx[u],node_idx[v])){
+                            weight_type weight = dist[u] + edge_weight(node_idx[u],node_idx[v]);
+                            if (weight < dist[v]){
+                                dist[v] = weight;
+                                prev[v] = u;
+                                key = false;
+                            }
+                        }
+                    }
+                }
+            }
+            std::cout << "Bellman-Ford algorithm:\n";
+            for (int i=1; i<this->count; i++){
+                std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
+                hidden_function::print_path(i, node_idx, prev);
+                std::cout << n << "\n";
+            }
         }
 };
