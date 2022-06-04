@@ -36,11 +36,16 @@
  * And many more functions to do...
 *****************************************************************************/
 
+/* Configure data type for weight
+You can change it as: int, float, double,...
+*/
+typedef float weight_type;
+
 /* The single node use for edges structure */
 class Node{
     public:
     int data;
-    int weight;
+    weight_type weight;
     Node* next;
 
     Node(){
@@ -63,7 +68,7 @@ class Node2{
         edges = NULL;
     }
 
-    void _add_node(int data, int weight){
+    void _add_node(int data, weight_type weight){
         // First element
         if (edges == NULL){
             edges = new Node();
@@ -176,8 +181,15 @@ void _del(Node2* b, Node2* &a, int node){
         b = b->next;
     }
 }
+
+void print_path(int dest, int idx[], int prev[]){
+    if (dest == -1 || dest == 0) return;
+    std::cout << idx[dest] << " ";
+    print_path(prev[dest], idx, prev);
+}
 }
 
+weight_type inf = 99999;
 /* A Graph class. This class represents a undirected graph using adjacency list representation */
 class Graph{
     /* The class members declared as private can be accessed only by the functions inside the class.
@@ -256,7 +268,7 @@ class Graph{
         }
 
         /* Insert a new edge in this graph without weight. The two edges in these variables must exist in graph.
-        If node 2 and 3 are already existed in graph: (The weight will be set 0)
+        If node 2 and 3 are already existed in graph: (The weight will be set 0.0)
         add_edge(2, 3); */
         void add_edge(int node1, int node2){
             Node2* a = this->root;
@@ -283,9 +295,9 @@ class Graph{
         }
 
         /* Insert a new edge in this graph. The two edges in these variables must exist in graph.
-        If node 2 and 3 are already existed in graph and weight is 4:
-        add_edge(2, 3, 4); */
-        void add_edge(int node1, int node2, int weight){
+        If node 2 and 3 are already existed in graph and weight is 4.5:
+        add_edge(2, 3, 4.5); */
+        void add_edge(int node1, int node2, weight_type weight){
             Node2* a = this->root;
             int c = 0;
             int n_max = max(node1,node2);
@@ -411,9 +423,9 @@ class Graph{
         }
 
         /* The function returns the weight of edge */
-        int edge_weight(int node1, int node2){
+        weight_type edge_weight(int node1, int node2){
             Node2* a = this->root;
-            int result = -1;
+            weight_type result = inf;
             while(a != NULL && a->data <= node1){
                 if(a->data == node1){
                     Node* b = a->edges;
@@ -427,7 +439,7 @@ class Graph{
                 }
                 a = a->next;
             }
-            if (result == -1){ std::cout << "Warning: This edge does not exist in graph\n"; }
+            if (result == inf){ std::cout << "Warning: This edge does not exist in graph\n"; }
 
             return result;
         }
@@ -511,7 +523,7 @@ class Graph{
             }
         }
 
-        /* Kiem tra n1 va n2 xem ca hai co gan nhau khong? */
+        /* Check if node n1 and node n2 are neighbor */
         bool is_near(int n1, int n2){
             Node2* a = this->root;
             bool check = false;
@@ -593,13 +605,10 @@ class Graph{
             int* q=result2;
             return q;
         }
-        void print_path(int dest, int idx[], int prev[]){
-            if (dest == -1 || dest == 0) return;
-            // if (prev[i] == -1) return;
-            std::cout << idx[dest] << " ";
-            print_path(prev[dest], idx, prev);
-        }
 
+        /* The main function that calculates distances of
+        shortest paths and show these paths from src to all vertices
+        */
         void Dijkstra(int n){
             // int *node_idx = new int[this->count];
             int node_idx[this->count];
@@ -611,8 +620,7 @@ class Graph{
                 F[i] = 0;
             }
             delete[] p;
-            int inf = 999;
-            int dist[this->count];
+            weight_type dist[this->count];
             int prev[this->count];
             F[0] = 1;   // v0 in F
             dist[0] = 0;
@@ -628,7 +636,7 @@ class Graph{
                 }
             }
             for (int i=1; i<this->count; i++){
-                int dist_min = inf;
+                weight_type dist_min = inf;
                 int m_min = -1;
                 for (int m=1; m<this->count; m++){
                     if ((F[m] == 0) && (dist[m] < dist_min)){
@@ -641,14 +649,15 @@ class Graph{
                 F[m_min] = 1;
                 for (int k=1; k<this->count; k++){
                     if (!F[k] && (is_near(node_idx[m_min],node_idx[k]))){
-                        int weight = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
+                        weight_type weight = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
                         if (dist[k] > weight){
                             dist[k] = weight;
                             prev[k] = m_min;
                         }
                     }
                 }
-            }/*
+            }
+            /*
             for (int i=0; i<this->count; i++){
                 std::cout << node_idx[i] << " , ";
             }
@@ -662,7 +671,7 @@ class Graph{
             std::cout << endl;*/
             for (int i=1; i<this->count; i++){
                 std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
-                print_path(i, node_idx, prev);
+                hidden_function::print_path(i, node_idx, prev);
                 std::cout << n << "\n";
             }
 
