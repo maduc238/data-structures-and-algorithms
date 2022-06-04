@@ -10,26 +10,24 @@ int main(){
             2 -- 4
     */
     Graph G;
-    G.add_node(0);
-    G.add_node(1);
-    G.add_node(2);
-    G.add_edge(0,1, 1);
-    G.add_edge(0,2, 2);
-    G.add_node(4);
-    G.add_edge(2,4, 3);
-    G.add_node(5);
-    G.add_edge(1,5, 4);
-    G.add_node(3);
-    G.add_edge(1,3, 5);
-    G.add_edge(3,5, 6);
-    G.add_edge(3,4, 7);
-    G.add_node(6);
-    G.add_edge(3,6, 8);
-    
-    // G.print_graph_data();
-    // cout << "----------------\n";
-    // G.delete_node(2);
-    // G.print_graph_data();
+    G.add_sequence_node(9);
+    G.add_edge(0,1,4);
+    G.add_edge(1,2,8);
+    G.add_edge(2,3,7);
+    G.add_edge(3,4,9);
+    G.add_edge(4,5,10);
+    G.add_edge(5,6,2);
+    G.add_edge(6,7,1);
+    G.add_edge(7,8,7);
+    G.add_edge(0,7,8);
+    G.add_edge(1,7,11);
+    G.add_edge(6,8,6);
+    G.add_edge(2,8,2);
+    G.add_edge(2,5,4);
+    G.add_edge(3,5,14);
+
+    G.print_graph_data();
     G.Dijkstra(0);
+
     return 0;
 }

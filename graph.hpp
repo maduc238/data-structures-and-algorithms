@@ -1,7 +1,8 @@
 #include <iostream>
 #include "sort.hpp"
-using namespace std;
-#define MAX 50
+#include "queue.hpp"
+#include "stack.hpp"
+
 
 /*****************************************************************************
  * The graph algorithm base to Networkx in python
@@ -77,7 +78,7 @@ class Node2{
             }
             if (a->data == data){
                 if (this->data != data)
-                cout << "Warning: This node already exists in graph\n";
+                std::cout << "Warning: This node already exists in graph\n";
                 return;
             }
             Node* temp = new Node();
@@ -129,73 +130,16 @@ class Node2{
             }
             else if (a->data == node) edges = edges->next;
             else
-                cout << "Warning: Can't find node " << node << " in this graph\n";
+                std::cout << "Warning: Can't find node " << node << " in this graph\n";
         }
 };
-struct queue {
-    int element[MAX];
-    int front;
-    int rear;
-};
-struct queue* create_queue() {
-    struct queue* q = new struct queue[sizeof(struct queue)];
-    q->front = -1;
-    q->rear = -1;
-    return q;
-}
-int isEmpty(struct queue* q) {
-    if (q->rear == -1)
-        return 1;
-    else
-        return 0;
-}
-
-void add_element_into_queue(struct queue* q, int value) {
-    if (q->rear == MAX - 1)
-        printf("\nQueue is full.");
-    else {
-        if (q->front == -1)
-            q->front = 0;
-        q->rear++;
-        q->element[q->rear] = value;
-  }
-}
-
-int remove_element_from_queue(struct queue* q) {
-    int item;
-    if (isEmpty(q)) {
-        printf("\nQueue is empty.");
-        item = -1;
-    }
-    else {
-        item = q->element[q->front];
-        q->front++;
-        if (q->front > q->rear) {
-            q->front = q->rear = -1;
-        }
-    }
-    return item;
-}
-
-void print_queue(struct queue* q) {
-    int i = q->front;
-    if (isEmpty(q)) {
-        printf("Hàng đợi rỗng");
-  } else {
-        printf("\nCác phần tử trong hàng đợi là: ");
-        for (i = q->front; i < q->rear + 1; i++) {
-            printf("%d ", q->element[i]);
-        }
-    }
-}
-
 namespace hidden_function{
 /* A helper function to print all linked list in the data structure */
 void print_all_edge(Node* node){
     if (node == NULL)
         return;
-    if (node->next == NULL) cout << node->data;
-    else cout << node->data << " - ";
+    if (node->next == NULL) std::cout << node->data;
+    else std::cout << node->data << " - ";
     print_all_edge(node->next);
 }
 
@@ -203,9 +147,9 @@ void print_all_edge(Node* node){
 void print_all_node(Node2* node){
     if (node == NULL)
         return;
-    cout << node->data << ": ";
+    std::cout << node->data << ": ";
     print_all_edge(node->edges);
-    cout << "\n";
+    std::cout << "\n";
     print_all_node(node->next);
 }
 
@@ -268,7 +212,7 @@ class Graph{
                     a = a->next;
                 }
                 if (a->data == data){
-                    cout << "Warning: Node " << data << " already exists in this graph\n";
+                    std::cout << "Warning: Node " << data << " already exists in this graph\n";
                     return;
                 }
                 Node2* temp = new Node2();
@@ -305,10 +249,10 @@ class Graph{
         //Acess a node in graph.
         Node2* acess_node(int n){
             Node2* a = this->root;
-            while(a!=NULL &&a->data<n){
+            while(a!=NULL &&(a->data)<n){
                 a=a->next;
             }
-            return a->next;
+            return a;
         }
 
         /* Insert a new edge in this graph without weight. The two edges in these variables must exist in graph.
@@ -326,7 +270,7 @@ class Graph{
                 a = a->next;
             }
             if (c != 2 && node1 != node2){
-                cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                std::cout << "Waring: There is some node(s) that does not exist in this graph\n";
                 return;
             }
             a = this->root;
@@ -353,7 +297,7 @@ class Graph{
                 a = a->next;
             }
             if (c != 2 && node1 != node2){
-                cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                std::cout << "Waring: There is some node(s) that does not exist in this graph\n";
                 return;
             }
             a = this->root;
@@ -367,14 +311,18 @@ class Graph{
 
         /* A helper function, shows the total number of nodes in the graph */
         void print_count(){
-            cout << this->count <<"\n";
+            std::cout << this->count <<"\n";
+        }
+        /* A helper function, return the total number of nodes in the graph */
+        int counts(){
+            return this->count;
         }
 
         /* A void function print all graph's data: nodes and edges in a node struct
         Just a function that supports displaying data, no application to the algorithm.*/
         void print_graph_data(){
             if (this->root == NULL)
-                cout << "Warning: There are no nodes in this graph\n";
+                std::cout << "Warning: There are no nodes in this graph\n";
             hidden_function::print_all_node(this->root);
         }
 
@@ -383,13 +331,13 @@ class Graph{
         -> All nodes: 2, 3, 4, 6, 7 */
         void print_nodes(){
             Node2* a = this->root;
-            cout << "All nodes: ";
+            std::cout << "All nodes: ";
             while (a != NULL){
-                cout << a->data;
-                if (a->next != NULL) cout << ", ";
+                std::cout << a->data;
+                if (a->next != NULL) std::cout << ", ";
                 a = a->next;
             }
-            cout << "\n";
+            std::cout << "\n";
         }
 
         /*  A void function print all nodes in graph G. If graph G have egdes (0-1), (1-3), (3,2), (2,1):
@@ -397,17 +345,17 @@ class Graph{
         -> All edges: (0 - 1), (1 - 2), (1 - 3), (2 - 3) */
         void print_edges(){
             Node2* a = this->root;
-            cout << "All edges: ";
+            std::cout << "All edges: ";
             while (a != NULL){
                 while (a->edges != NULL){
                     if (a->data <= a->edges->data)
-                        cout <<"("<<a->data<<" - "<<a->edges->data<<")";
-                    if (a->edges->next != NULL && a->data <= a->edges->next->data) cout<< ", ";
+                        std::cout <<"("<<a->data<<" - "<<a->edges->data<<")";
+                    if (a->edges->next != NULL && a->data <= a->edges->next->data) std::cout<< ", ";
                     a->edges = a->edges->next;
                 }
                 a = a->next;
             }
-            cout << "\n";
+            std::cout << "\n";
         }
 
         /* Given a node name n, this function will delete this node from the graph.
@@ -439,7 +387,7 @@ class Graph{
                 this->root = this->root->next;
                 }
             else
-                cout << "Warning: Can't find node " << n << " in this graph\n";
+                std::cout << "Warning: Can't find node " << n << " in this graph\n";
         }
 
         /* Delete a edge connected by two nodes */
@@ -468,17 +416,18 @@ class Graph{
             int result = -1;
             while(a != NULL && a->data <= node1){
                 if(a->data == node1){
-                    while(a->edges != NULL && a->edges->data <= node2){
-                        if (a->edges->data == node2){
-                            result = a->edges->weight;
+                    Node* b = a->edges;
+                    while(b != NULL && b->data <= node2){
+                        if (b->data == node2){
+                            result = b->weight;
                             break;
                         }
-                        a->edges = a->edges->next;
+                        b = b->next;
                     }
                 }
                 a = a->next;
             }
-            if (result == -1){ cout << "Warning: This edge does not exist in graph\n"; }
+            if (result == -1){ std::cout << "Warning: This edge does not exist in graph\n"; }
 
             return result;
         }
@@ -490,11 +439,11 @@ class Graph{
         void add_sequence_node(int number_node){
             if (this->root != NULL){
                 // This graph did not empty
-                cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
+                std::cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
                 return;
             }
             else if (number_node < 1){
-                cout << "Warning: number_node must be greater than 1\n";
+                std::cout << "Warning: number_node must be greater than 1\n";
                 return;
             }
             // Else, initial new node
@@ -524,7 +473,7 @@ class Graph{
                 a = a->next;
             }
             if (check == false){
-                cout << "Warning: Can't find node " << n << " in this graph\n";
+                std::cout << "Warning: Can't find node " << n << " in this graph\n";
                 return;
             }
             // Start to print neighbors
@@ -539,11 +488,11 @@ class Graph{
         void add_nodes_from(int nodes[], int n_nodes){
             if (this->root != NULL){
                 // This graph did not empty
-                cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
+                std::cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
                 return;
             }
             else if (n_nodes < 1){
-                cout << "Warning: number_node must be greater than 1\n";
+                std::cout << "Warning: number_node must be greater than 1\n";
                 return;
             }
             // Using heap sort to sort the array nodes[] from sort.hpp
@@ -591,76 +540,77 @@ class Graph{
             return false;
         }
 
-        void search(int n){
-            Node2* a = this->root;
-            int nodes[this->count];
-            int i = 0, j = 0;
-            while (i < this->count){
-                if (a->data < n){
-                    nodes[this->count - i - 1] = a->data;
-                    i++;
-                }
-                else {
-                    nodes[j] = a->data;
-                    i++;
-                    j++;
-                }
-                a = a->next;
-            }
-            for (int i=0; i<this->count; i++){
-                cout << nodes[i] << "-";
-            }
-        }
-
         /* BFS traversal of the vertices reachable from node n */
-        void breath_first_search(int n){
+        int* breath_first_search(int n){
             struct queue* q = create_queue();
+            int arr[this->count]={};
+            int result[this->count];
+            int j=0;
             add_element_into_queue(q, n);
-            while (!isEmpty(q)) {
-                //print_queue(q);
+            arr[n]=1;
+            while (!isEmpty(q)){
                 int currentVertex = remove_element_from_queue(q);
-                printf("%d da duoc duyet\n", currentVertex);
-                Node* temp = this->acess_node(n)->edges;
-                while ( temp->next!=NULL) {
-                    add_element_into_queue(q, temp->data);
+                result[j]=currentVertex;
+                j++;
+                Node* temp = (this->acess_node(currentVertex))->edges;
+                while (temp!=NULL) {
+                    int adjVertex = temp->data ;
+                    if(arr[adjVertex]==0){
+                        arr[adjVertex]=1;
+                        add_element_into_queue(q, adjVertex);
+                    }
                     temp = temp->next;
                 }
-              }
+            }
+            int* p=result;
+            return p;
         }
-
 
         /* DFS traversal of the vertices reachable from node n */
-        void deep_first_search(int n);
-
-        void path(int node, int node_idx[], int prev[]){
-            int i = 0;
-            if (node == 0 || node == -1) return;
-            while (node != node_idx[i] && i < this->count){
-                i++;
+        int* deep_first_search(int n){
+            struct stack* s;
+            init_st(s);
+            int arr2[this->count]={};
+            int result2[this->count];
+            int j=0;
+            push(s, n);
+            arr2[n]=1;
+            while(!isEmp(s)){
+                int currentVertex = pop(s);
+                result2[j]=currentVertex;
+                j++;
+                Node* temp2 = (this->acess_node(currentVertex))->edges;
+                while (temp2!=NULL) {
+                    int adjVertex = temp2->data ;
+                    if(arr2[adjVertex]==0){
+                        arr2[adjVertex]=1;
+                        push(s, adjVertex);
+                    }
+                    temp2 = temp2->next;
+                }           
+            
             }
-            cout << node_idx[i] << " - " ;
-            path(prev[i], node_idx, prev);
-
+            int* q=result2;
+            return q;
+        }
+        void print_path(int dest, int idx[], int prev[]){
+            if (dest == -1 || dest == 0) return;
+            // if (prev[i] == -1) return;
+            std::cout << idx[dest] << " ";
+            print_path(prev[dest], idx, prev);
         }
 
-        void Dijkstra(int n_dest, int n){
-            Node2* a = this->root;
+        void Dijkstra(int n){
+            // int *node_idx = new int[this->count];
             int node_idx[this->count];
             int F[this->count];
-            int i = 0, j = 0;
-            while (i < this->count){
-                if (a->data < n){
-                    node_idx[this->count - i - 1] = a->data;
-                }
-                else {
-                    node_idx[j] = a->data;
-                    j++;
-                }
-                i++;
+            int *p;
+            p = breath_first_search(n);
+            for (int i=0; i<this->count; i++){
+                node_idx[i] = *(p+i);
                 F[i] = 0;
-                a = a->next;
             }
-            // cai dat
+            delete[] p;
             int inf = 999;
             int dist[this->count];
             int prev[this->count];
@@ -683,28 +633,38 @@ class Graph{
                 for (int m=1; m<this->count; m++){
                     if ((F[m] == 0) && (dist[m] < dist_min)){
                         dist_min = dist[m];
-                        m_min = m;}
+                        m_min = m;
+                    }
                 }
+                // std::cout << "m min = " << node_idx[m_min] << "\n";
                 if (m_min == -1) continue;
                 F[m_min] = 1;
                 for (int k=1; k<this->count; k++){
-                    if ((F[k] == 0) && (is_near(node_idx[m_min],node_idx[k])) && (dist[k] > (dist[m_min] + edge_weight(node_idx[m_min],node_idx[k])))){
-                        dist[k] = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
-                        prev[k] = node_idx[m_min];
+                    if (!F[k] && (is_near(node_idx[m_min],node_idx[k]))){
+                        int weight = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
+                        if (dist[k] > weight){
+                            dist[k] = weight;
+                            prev[k] = m_min;
+                        }
                     }
                 }
-            }
+            }/*
             for (int i=0; i<this->count; i++){
-                cout << node_idx[i] << " , ";
+                std::cout << node_idx[i] << " , ";
             }
-            cout << "\n";
-            // print prev here
+            std::cout << endl;
             for (int i=0; i<this->count; i++){
-                cout << prev[i] << " , ";
+                std::cout << prev[i] << " , ";
             }
-            cout << "\n";
-            // cout << node_idx[1] << " , " << prev[1] << " , ";
+            std::cout << endl;for (int i=0; i<this->count; i++){
+                std::cout << dist[i] << " , ";
+            }
+            std::cout << endl;*/
+            for (int i=1; i<this->count; i++){
+                std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
+                print_path(i, node_idx, prev);
+                std::cout << n << "\n";
+            }
 
-            path(n_dest, node_idx, prev);
         }
 };
