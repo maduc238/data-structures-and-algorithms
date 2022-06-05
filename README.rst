@@ -5,12 +5,14 @@ Graph Data Structure And Algorithms
 This guide can help you start working with Graph algorithm.
 
 - **Facebook (including documentation):** https://www.facebook.com/maduc238
-- **GitHub and Tutorial:** https://https://github.com/maduc238/data-structures-and-algorithms
+- **GitHub and Tutorial:** https://github.com/maduc238/data-structures-and-algorithms
 
 Creating a graph
 --------------
 
-Create an empty graph with no nodes and no edges.::
+Create an empty graph with no nodes and no edges.
+
+.. code-block::
 
     Graph G;
 
@@ -19,7 +21,7 @@ By definition, a Graph is a collection of nodes (vertices) along with identified
 Nodes
 -------
 
-The graph G can be grown in several ways. NetworkX includes many graph generator functions and 
+The graph G can be grown in several ways. Graph includes many graph generator functions and 
 facilities to read and write graphs in many formats. To get started though we'll look at simple 
 manipulations. You can add one node at a time,::
 
