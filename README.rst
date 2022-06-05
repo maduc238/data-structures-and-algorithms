@@ -133,6 +133,7 @@ License
 -------
 
 .. code-block::
+    
     Copyright (C) 2022 maduc238 Developers
     Ma Viet Duc <duc.mv190036@sis.hust.edu.vn>
     Nguyen Duc Canh
