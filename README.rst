@@ -4,7 +4,7 @@ Graph Data Structure And Algorithms
 
 This guide can help you start working with Graph algorithm.
 
-- **Facebook (including documentation):** https://www.facebook.com/maduc238
+- **Facebook:** https://www.facebook.com/maduc238
 - **GitHub and Tutorial:** https://github.com/maduc238/data-structures-and-algorithms
 
 Creating a graph
