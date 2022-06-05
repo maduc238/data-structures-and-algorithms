@@ -9,6 +9,7 @@
  *
  * Task need to do:
  * Spanning tree: Kruskal and Dijkstra algorithm
+ * Appling for map
  *
  * To run these functions:
  * Initial a new graph:
@@ -371,7 +372,7 @@ class Graph{
 
         /* Given a node name n, this function will delete this node from the graph.
         If node 2 is already existed in graph:
-        delete_node(2); */
+        G.delete_node(2); */
         void delete_node(int n){
             Node2* a = this->root;
             bool check = false;
@@ -578,7 +579,7 @@ class Graph{
         }
 
         /* DFS traversal of the vertices reachable from node n */
-        int* deep_first_search(int n){
+        int* depth_first_search(int n){
             struct stack* s;
             init_st(s);
             int arr2[this->count]={};
@@ -807,6 +808,10 @@ class Graph{
         }
 
         void SpanningTree_Kruskal(){
+            std::cout << "Hello";
+        }
+
+        void SpanningTree_Dijkstra(){
             std::cout << "Hello";
         }
 };
