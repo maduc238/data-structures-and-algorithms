@@ -8,8 +8,6 @@
  * The graph algorithm base to Networkx in python
  *
  * Task need to do:
- * Floyd algorithm
- * Find graph cycle
  * Spanning tree: Kruskal and Dijkstra algorithm
  *
  * To run these functions:
@@ -645,7 +643,6 @@ class Graph{
                         m_min = m;
                     }
                 }
-                // std::cout << "m min = " << node_idx[m_min] << "\n";
                 if (m_min == -1) continue;
                 F[m_min] = 1;
                 for (int k=1; k<this->count; k++){
@@ -718,5 +715,98 @@ class Graph{
                 hidden_function::print_path(i, node_idx, prev);
                 std::cout << n << "\n";
             }
+        }
+
+        void Floyd(){
+            int node_idx[this->count];
+            Node2* a = this->root;
+            int i = 0;
+            while (a != NULL){
+                node_idx[i] = a->data;
+                a = a->next;
+                i ++;
+            }
+            weight_type D[this->count][this->count];
+            int P[this->count][this->count];
+            for (int i=0;i<this->count;i++){
+                for (int j=i;j<this->count;j++){
+                    P[i][j] = -1;
+                    P[j][i] = -1;
+                    if (i == j){
+                        D[i][j] = 0; D[j][i] = 0;
+                    }
+                    else if (is_near(node_idx[i],node_idx[j])){
+                        D[i][j] = edge_weight(node_idx[i],node_idx[j]);
+                        D[j][i] = D[i][j];
+                    }
+                    else{
+                        D[i][j] = inf; D[j][i] = inf;
+                    }
+                }
+            }
+            for (int i=0;i<this->count;i++){
+                for (int j=0;j<this->count;j++){
+                    for (int k=0;k<this->count;k++){
+                        if (D[i][j] > D[i][k] + D[k][j]){
+                            D[i][j] = D[i][k] + D[k][j];
+                            P[i][j] = k;
+                        }
+                    }
+                }
+            }
+            std::cout << "Floyd algorithm\n\t";
+            for (int i=0;i<this->count;i++){
+                std::cout << node_idx[i] << "\t";
+            }
+            std::cout << "\n\n";
+            for (int i=0;i<this->count;i++){
+                std::cout << node_idx[i] << "\t";
+                for (int j=0;j<this->count;j++){
+                    std::cout << D[i][j] << "\t";
+                }
+                std::cout << "\n";
+            }
+        }
+
+        bool Cycle_Detection(int s, int c){
+            Node2* a = this->root;
+            bool check = false;
+            while (a != NULL && a->data <= c){
+                if (a->data == c){
+                    check = true;
+                    break;
+                }
+                a = a->next;
+            }
+            if (check == false) return false;
+            Node* b = a->edges;
+            int *Ac, *Ac_old;
+            int num = 0;
+            while (b != NULL){
+                Ac = new int[num+1];
+                Ac = Ac_old;
+                *(Ac+num) = b->data;
+                Ac_old = Ac;
+                b = b->next;
+                num++;
+            }
+            delete[] Ac_old;
+            if (num == 0) return false;
+            int i = 0;
+            while (i < num){
+                if (Ac[i] == s) return true;
+                i++;
+            }
+            i = 0;
+            while (i < num){
+                if (Cycle_Detection(s, Ac[i]))
+                    return true;
+                i++;
+            }
+            return false;
+        }
+
+        void SpanningTree_Kruskal(){
+            std::cout << "Hello";
         }
 };
