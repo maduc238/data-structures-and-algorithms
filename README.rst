@@ -123,8 +123,8 @@ To check graph cycle with two neighbors node, use bool function ``Cycle_Detectio
 
 A Minimum Spanning Tree (MST) or minimum weight spanning tree is a subset of the edges of a connected, 
 edge-weighted undirected graph that connects all the vertices together, without any cycles and with the 
-minimum possible total edge weight.[1] That is, it is a spanning tree whose sum of edge weights is as 
-small as possible.[2] More generally, any edge-weighted undirected graph (not necessarily connected) has 
+minimum possible total edge weight. That is, it is a spanning tree whose sum of edge weights is as 
+small as possible. More generally, any edge-weighted undirected graph (not necessarily connected) has 
 a minimum spanning forest, which is a union of the minimum spanning trees for its connected components.
 Algorithms show in this Graph library is: ``SpanningTree_Kruskal``, ``SpanningTree_Dijkstra``.
 
@@ -133,7 +133,7 @@ License
 -------
 
 .. code-block::
-    
+
     Copyright (C) 2022 maduc238 Developers
     Ma Viet Duc <duc.mv190036@sis.hust.edu.vn>
     Nguyen Duc Canh
