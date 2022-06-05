@@ -40,8 +40,7 @@ or you can add with a sequence numbers of nodes in graph.
 
 .. code-block::
 
-    add_sequence_node(8);
-    // Graph will have node 0,1,...,7 (with 8 nodes)
+    add_sequence_node(8);           // Graph will have node 0,1,...,7 (with 8 nodes)
 
 Edges
 -------
@@ -60,7 +59,7 @@ Removing elements from a graph
 One can remove nodes and edges from the graph in a similar fashion to adding. Use methods
 ``delete_node`` and ``delete_edge``, e.g.
 
-With ``delete_node``, this will automatically delete edges near this node
+With ``delete_node``, this will automatically delete edges near this node.
 
 .. code-block::
 
@@ -72,18 +71,18 @@ Analyzing graphs
 
 The structure of G can be analyzed using various graph-theoretic functions such as: Print graph data 
 with all node with these neighbors by ``print_graph_data``, print all nodes ``print_nodes``, print all 
-edges ``print_edges``
+edges ``print_edges``.
 
 .. code-block::
 
     G.print_graph_data();
     G.print_nodes();
-    G.print_edges()
+    G.print_edges();
 
 Accessing edges and neighbors
 -------
 
-To see all neighbors for a node, you can call a void function ``print_neighbors``
+To see all neighbors for a node, you can call a void function ``print_neighbors``.
 
 .. code-block::
 
@@ -96,7 +95,7 @@ You can get/set the attributes of an edge using subscript notation if the edge a
     int weight;
     weight = G.edge_weight(1, 2);
 
-To check if 2 nodes are close to each other, using bool funcrion ``is_near``
+To check if 2 nodes are close to each other, using bool funcrion ``is_near``.
 
 .. code-block::
 
@@ -136,7 +135,7 @@ License
 
     Copyright (C) 2022 maduc238 Developers
     Ma Viet Duc <duc.mv190036@sis.hust.edu.vn>
-    Nguyen Duc Canh
-    Do Van Ben
-    Nguyen Ho Giang Nam
-    Quach Dinh Dung
+    Nguyen Duc Canh <canh.nd196038@sis.hust.edu.vn>
+    Do Van Ben <ben.dv191695@sis.hust.edu.vn>
+    Nguyen Ho Giang Nam <nam.nhg193030@sis.hust.edu.vn>
+    Quach Dinh Dung <dung.qd190014@sis.hust.edu.vn>
