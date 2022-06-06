@@ -187,6 +187,47 @@ void print_path(int dest, int idx[], int prev[]){
     std::cout << idx[dest] << " ";
     print_path(prev[dest], idx, prev);
 }
+
+/**
+ * Quick Sort
+**/
+void swap(weight_type* a, weight_type* b){
+	weight_type t = *a;
+	*a = *b;
+	*b = t;
+}
+void swap(int* a, int* b){
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+void heapify(weight_type arr[], int a1[], int a2[], int n, int i){
+	int largest = i; // Initialize largest as root
+	int l = 2 * i + 1; // left = 2*i + 1
+	int r = 2 * i + 2; // right = 2*i + 2
+	if (l < n && arr[l] > arr[largest])
+		largest = l;
+	if (r < n && arr[r] > arr[largest])
+		largest = r;
+	if (largest != i){
+		swap(&arr[i], &arr[largest]);
+        swap(&a1[i], &a1[largest]);
+        swap(&a2[i], &a2[largest]);
+		heapify(arr, a1, a2, n, largest);
+	}
+}
+void heap_sort(weight_type arr[], int a1[], int a2[], int n){
+	for(int i = n/2 - 1; i >= 0; i--)
+		heapify(arr, a1, a2, n, i);
+	for(int i = n - 1; i > 0; i--){
+		swap(&arr[0], &arr[i]);
+        swap(&a1[0], &a1[i]);
+        swap(&a2[0], &a2[i]);
+		heapify(arr, a1, a2, i, 0);
+	}
+}
+
+
 }
 
 weight_type inf = 99999;
@@ -359,15 +400,54 @@ class Graph{
             Node2* a = this->root;
             std::cout << "All edges: ";
             while (a != NULL){
-                while (a->edges != NULL){
-                    if (a->data <= a->edges->data)
-                        std::cout <<"("<<a->data<<" - "<<a->edges->data<<")";
-                    if (a->edges->next != NULL && a->data <= a->edges->next->data) std::cout<< ", ";
-                    a->edges = a->edges->next;
+                Node* b = a->edges;
+                while (b != NULL){
+                    if (a->data <= b->data)
+                        std::cout <<"("<<a->data<<" - "<<b->data<<")";
+                    if (b->next != NULL && a->data <= b->next->data) std::cout<< ", ";
+                    b = b->next;
                 }
                 a = a->next;
             }
             std::cout << "\n";
+        }
+
+        int num_edges(){
+            Node2* a = this->root;
+            int c=0;
+            while (a != NULL){
+                Node* b = a->edges;
+                while (b != NULL){
+                    if (a->data <= b->data) c++;
+                    b = b->next;
+                }
+                a = a->next;
+            }
+            return c;
+        }
+
+        /* Return degree of node n
+        */
+        int node_degree(int n){
+            Node2* a = this->root;
+            bool check = false;
+            while (a != NULL && a->data <= n){
+                if (a->data == n){
+                    check = true;
+                    break;
+                }
+                a = a->next;
+            }
+            if (check == false){
+                return 0;
+            }
+            Node* b = a->edges;
+            int c = 0;
+            while (b != NULL){
+                c++;
+                b = b->next;
+            }
+            return c;
         }
 
         /* Given a node name n, this function will delete this node from the graph.
@@ -771,44 +851,79 @@ class Graph{
 
         bool Cycle_Detection(int s, int c){
             Node2* a = this->root;
-            bool check = false;
             while (a != NULL && a->data <= c){
                 if (a->data == c){
-                    check = true;
                     break;
                 }
                 a = a->next;
             }
-            if (check == false) return false;
             Node* b = a->edges;
-            int *Ac, *Ac_old;
-            int num = 0;
-            while (b != NULL){
-                Ac = new int[num+1];
-                Ac = Ac_old;
-                *(Ac+num) = b->data;
-                Ac_old = Ac;
-                b = b->next;
-                num++;
-            }
-            delete[] Ac_old;
+            int num = node_degree(c);
             if (num == 0) return false;
-            int i = 0;
-            while (i < num){
-                if (Ac[i] == s) return true;
-                i++;
-            }
-            i = 0;
-            while (i < num){
-                if (Cycle_Detection(s, Ac[i]))
-                    return true;
-                i++;
+            else {
+                int Ac[num];
+                for (int i=0;i<num;i++){
+                    Ac[i] = b->data;
+                    b = b->next;
+                }
+                bool check = false;
+                for (int i=0;i<num;i++){
+                    if (Ac[i] == s){
+                        check = true;
+                        break;
+                    }
+                }
+                if (check == true) return true;
+                else{
+                    for (int i=0;i<num;i++){
+                        if (Cycle_Detection(s, Ac[i]))
+                            return true;
+                    }
+                }
             }
             return false;
         }
 
-        void SpanningTree_Kruskal(){
-            std::cout << "Hello";
+        Graph SpanningTree_Kruskal(){
+            Graph temp;
+            Node2* a = this->root;
+            int ne = num_edges();
+            int nn = 0;
+            int S1[ne], S2[ne];
+            weight_type W[ne];
+            int i = 0;
+            while (a != NULL){
+                Node* b = a->edges;
+                while (b != NULL){
+                    if (a->data <= b->data){
+                        S1[i] = a->data;
+                        S2[i] = b->data;
+                        W[i] = b->weight;
+                        i++;
+                    }
+                    b = b->next;
+                }
+                delete[] b;
+                temp.add_node(a->data);
+                nn++;
+                a = a->next;
+            }
+            hidden_function::heap_sort(W, S1, S2, ne);
+            i = 0;
+            /*for (i = 0; i<ne;i++){
+                std::cout<<W[i]<<" ";
+            }*/
+            // temp.print_graph_data();
+            while (i < ne && temp.num_edges() < nn - 1){
+                cout << "i="<< i <<" "<< S1[i]<<" "<< S2[i] <<"\n";
+                if (!temp.Cycle_Detection(S1[i],S2[i]) || !temp.Cycle_Detection(S2[i],S1[i])){
+                    temp.add_edge(S1[i],S2[i],W[i]);
+                    cout << "i="<< i <<" "<< S1[i]<<" "<< S2[i] <<"\n";
+                }
+                i++;
+            }
+            // temp.print_graph_data();
+            return temp;
         }
 
         void SpanningTree_Dijkstra(){
