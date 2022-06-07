@@ -121,6 +121,10 @@ To see all neighbors for a node, you can call a void function ``print_neighbors`
 
     G.print_neighbors(1);
 
+To change weight for a edge, use function ``change_weight``::
+
+    G.change_weight(1, 2, 2.3);
+
 You can get/set the attributes of an edge using subscript notation if the edge already exists.
 
 .. code-block::

@@ -3,39 +3,6 @@
 #include "queue.hpp"
 #include "stack.hpp"
 
-
-/*****************************************************************************
- * The graph algorithm base to Networkx in python
- *
- * Task need to do:
- * Spanning tree: Dijkstra algorithm
- * Appling for map
- *
- * To run these functions:
- * Initial a new graph:
- * Graph G;
- *
- * Create a new node:
- * G.add_node(1);
- * G.add_node(0);
- * G.add_node(2);
- * (Or you can run function: add_sequence_node, add_node_from,...)
- *
- * Create a new edge:
- * G.add_edge(0,1, 0);  // weight = 0
- *
- * Delete a node:
- * G.delete_node(2);
- *
- * Delete a edge:
- * G.delete_edge(0,1);
- *
- * Print all graph data:
- * G.print_graph_data();
- *
- * And many more functions to do...
-*****************************************************************************/
-
 /* Configure data type for weight
 You can change it as: int, unsigned int, float, double,...
 */
@@ -120,23 +87,39 @@ class Node2{
     }
 
     void _delete_node(int node){
-            Node* a = edges;
-            bool check = false;
-            while (a->next != NULL && a->next->data <= node){
-                if (a->next->data == node){
-                    check = true;
-                    break;
-                }
-                a = a->next;
+        Node* a = edges;
+        bool check = false;
+        while (a->next != NULL && a->next->data <= node){
+            if (a->next->data == node){
+                check = true;
+                break;
             }
-            // Delete this node
-            if (check == true){
-                a->next = a->next->next;
-            }
-            else if (a->data == node) edges = edges->next;
-            else
-                std::cout << "Warning: Can't find node " << node << " in this graph\n";
+            a = a->next;
         }
+        // Delete this node
+        if (check == true){
+            a->next = a->next->next;
+        }
+        else if (a->data == node) edges = edges->next;
+        else
+            std::cout << "Warning: Can't find node " << node << " in this graph\n";
+    }
+
+    void _change_weight(int node, weight_type w){
+        Node* a = edges;
+        bool check = false;
+        while (a != NULL && a->data <= node){
+            if (a->data == node){
+                check = true;
+                break;
+            }
+            a = a->next;
+        }
+        if (check == true)
+            a->weight = w;
+        else
+            std::cout << "Warning: Can't find node " << node << " in this graph\n";
+    }
 };
 namespace hidden_function{
 /* A helper function to print all linked list in the data structure */
@@ -227,7 +210,13 @@ void heap_sort(weight_type arr[], int a1[], int a2[], int n){
 	}
 }
 
-
+int arg_arr(int n, int a[], int len){
+    int i;
+    for (i=0;i<len;i++){
+        if (a[i] == n) break;
+    }
+    return i;
+}
 }
 
 weight_type inf = 99999;
@@ -362,6 +351,31 @@ class Graph{
             }
         }
 
+        /* Change weight for edge (node1 - node2) */
+        void change_weight(int node1, int node2, weight_type weight){
+            Node2* a = this->root;
+            int c = 0;
+            int n_max = max(node1,node2);
+            bool Result = false;
+            // A checking loop, consider available nodes
+            while (a != NULL && a->data <= n_max){
+                if (a->data == node1 || a->data == node2)
+                    c++;
+                a = a->next;
+            }
+            if (c != 2 && node1 != node2){
+                std::cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                return;
+            }
+            a = this->root;
+            while (a->data <= node1 || a->data <= node2){
+                if (a->data == node1) a->_change_weight(node2, weight);
+                if (a->data == node2) a->_change_weight(node1, weight);
+                if (a->next == NULL) break;
+                a = a->next;
+            }
+        }
+
         /* A helper function, shows the total number of nodes in the graph */
         void print_count(){
             std::cout << this->count <<"\n";
@@ -379,7 +393,10 @@ class Graph{
             hidden_function::print_all_node(this->root);
         }
 
-        /*  A void function print all nodes in graph G. If graph G have nodes 2,3,4,6,7:
+        /* A void function help displaying data with a Graph matrix */
+        void print_matrix();
+
+        /* A void function print all nodes in graph G. If graph G have nodes 2,3,4,6,7:
         G.print_nodes();
         -> All nodes: 2, 3, 4, 6, 7 */
         void print_nodes(){
@@ -706,14 +723,20 @@ class Graph{
             dist[0] = 0;
             prev[0] = -1;
             for (int i=1; i<this->count; i++){
-                if (is_near(n, node_idx[i])){
-                    dist[i] = edge_weight(n, node_idx[i]);
-                    prev[i] = n;
-                }
-                else{
-                    dist[i] = inf;
-                    prev[i] = -1;
-                }
+                dist[i] = inf;
+                prev[i] = -1;
+            }
+            Node2* a = this->root;
+            while (a != NULL){
+                if (a->data == n) break;
+                a = a->next;
+            }
+            Node* b = a->edges;
+            while (b != NULL){
+                int idx = hidden_function::arg_arr(b->data, node_idx, this->count);
+                dist[idx] = edge_weight(n, b->data);
+                prev[idx] = n;
+                b = b->next;
             }
             for (int i=1; i<this->count; i++){
                 weight_type dist_min = inf;
