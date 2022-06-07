@@ -192,14 +192,14 @@ edge-weighted undirected graph that connects all the vertices together, without 
 minimum possible total edge weight. That is, it is a spanning tree whose sum of edge weights is as 
 small as possible. More generally, any edge-weighted undirected graph (not necessarily connected) has 
 a minimum spanning forest, which is a union of the minimum spanning trees for its connected components.
-Algorithms show in this Graph library are: ``SpanningTree_Kruskal``, ``SpanningTree_Dijkstra``.
+Algorithms show in this Graph library are: ``SpanningTree_Kruskal``.
 
 .. code-block::
     
     Graph G_spanning_tree = G.SpanningTree_Kruskal();
     G_spanning_tree.print_graph_data();
 
-return::
+Return::
 
     0: 1
     1: 0 - 2

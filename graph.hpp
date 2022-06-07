@@ -958,8 +958,4 @@ class Graph{
             }
             return temp;
         }
-
-        void SpanningTree_Dijkstra(){
-            std::cout << "Hello";
-        }
 };
