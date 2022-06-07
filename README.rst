@@ -53,6 +53,39 @@ G can also be grown by adding one edge at a time,
     G.add_edge(1, 2, 8.2);      // weight = 8.2
     G.add_edge(2, 3);           // weight = 0
 
+Example code::
+
+    Graph G;
+    G.add_sequence_node(9);
+    G.add_edge(0,1,4.1);
+    G.add_edge(1,2,8.2);
+    G.add_edge(2,3,7.1);
+    G.add_edge(3,4,9.5);
+    G.add_edge(4,5,10.1);
+    G.add_edge(5,6,2.0);
+    G.add_edge(6,7,1.3);
+    G.add_edge(7,8,7.4);
+    G.add_edge(0,7,8.8);
+    G.add_edge(1,7,11.6);
+    G.add_edge(6,8,6.9);
+    G.add_edge(2,8,2.3);
+    G.add_edge(2,5,4.1);
+    G.add_edge(3,5,14.5);
+
+    G.print_graph_data();
+
+The ``print_graph_data`` will show nodes and these neighbor edges::
+
+    0: 1 - 7
+    1: 0 - 2 - 7
+    2: 1 - 3 - 5 - 8
+    3: 2 - 4 - 5
+    4: 3 - 5
+    5: 2 - 3 - 4 - 6
+    6: 5 - 7 - 8
+    7: 0 - 1 - 6 - 8
+    8: 2 - 6 - 7
+
 Removing elements from a graph
 -------
 
@@ -107,26 +140,76 @@ Algorithms
 Breadth-First Traversal (or Search) for a graph is similar to Breadth-First Traversal of a tree. The 
 only catch here is, unlike trees, graphs may contain cycles, so we may come to the same node again. 
 To avoid processing a node more than once. For simplicity, it is assumed that all vertices are 
-reachable from the starting vertex.
-
-These are ``breath_first_search`` and ``depth_first_search`` functions.
+reachable from the starting vertex. These are ``breath_first_search`` and ``depth_first_search`` functions.
 
 Given a graph and a source vertex in the graph, find the shortest paths from the source to all vertices 
 in the given graph. These algorithms function are: ``Dijkstra``, ``Bellman_Ford``, ``Floyd``.
+
+.. code-block::
+
+    G.Dijkstra(0);
+    // Or you can use Bellman_Ford()
+
+Return::
+
+    From 0 to 1: 1 0
+    From 0 to 7: 7 0
+    From 0 to 2: 2 1 0
+    From 0 to 6: 6 7 0
+    From 0 to 8: 8 2 1 0
+    From 0 to 3: 3 2 1 0
+    From 0 to 5: 5 6 7 0
+    From 0 to 4: 4 5 6 7 0
+
+With ``Floyd``, this will show all shortest weights to all nodes::
+
+    G.Floyd();
+
+Return::
+
+            0       1       2       3       4       5       6       7       8
+
+    0       0       4.1     12.3    19.4    28.9    16.4    10.1    8.8     14.3
+    1       4.1     0       8.2     15.3    24.8    12.3    12.9    11.6    10.2
+    2       12.3    8.2     0       7.1     14.2    4.1     6.1     7.4     2
+    3       19.4    15.3    7.1     0       9.5     11.2    13.2    14.5    9.1
+    4       28.9    24.8    14.2    9.5     0       10.1    12.1    13.4    16.2
+    5       16.4    12.3    4.1     11.2    10.1    0       2       3.3     6.1
+    6       10.1    12.9    6.1     13.2    12.1    2       0       1.3     6.9
+    7       8.8     11.6    7.4     14.5    13.4    3.3     1.3     0       7.4
+    8       14.3    10.2    2       9.1     16.2    6.1     6.9     7.4     0
 
 In graph theory, a cycle in a graph is a non-empty trail in which only the first and last vertices are 
 equal. A directed cycle in a directed graph is a non-empty directed trail in which only the first and 
 last vertices are equal. A graph without cycles is called an acyclic graph. A directed graph without 
 directed cycles is called a directed acyclic graph. A connected graph without cycles is called a tree.
-To check graph cycle with two neighbors node, use bool function ``Cycle_Detection``.
+To check graph cycle with two neighbors node, use bool function ``Cycle_Detection``.::
+
+    std::cout << G.Cycle_Detection(1,4);
 
 A Minimum Spanning Tree (MST) or minimum weight spanning tree is a subset of the edges of a connected, 
 edge-weighted undirected graph that connects all the vertices together, without any cycles and with the 
 minimum possible total edge weight. That is, it is a spanning tree whose sum of edge weights is as 
 small as possible. More generally, any edge-weighted undirected graph (not necessarily connected) has 
 a minimum spanning forest, which is a union of the minimum spanning trees for its connected components.
-Algorithms show in this Graph library is: ``SpanningTree_Kruskal``, ``SpanningTree_Dijkstra``.
+Algorithms show in this Graph library are: ``SpanningTree_Kruskal``, ``SpanningTree_Dijkstra``.
 
+.. code-block::
+    
+    Graph G_spanning_tree = G.SpanningTree_Kruskal();
+    G_spanning_tree.print_graph_data();
+
+return::
+
+    0: 1
+    1: 0 - 2
+    2: 1 - 3 - 5 - 8
+    3: 2 - 4
+    4: 3
+    5: 2 - 6
+    6: 5 - 7
+    7: 6
+    8: 2
 
 License
 -------

@@ -8,7 +8,7 @@
  * The graph algorithm base to Networkx in python
  *
  * Task need to do:
- * Spanning tree: Kruskal and Dijkstra algorithm
+ * Spanning tree: Dijkstra algorithm
  * Appling for map
  *
  * To run these functions:
@@ -798,6 +798,10 @@ class Graph{
             }
         }
 
+        /* The Floyd Warshall Algorithm is for solving the All Pairs Shortest Path problem. 
+        The problem is to find shortest distances between every pair of vertices in a given edge 
+        weighted directed Graph. This function print Shortest distance matrix
+        */
         void Floyd(){
             int node_idx[this->count];
             Node2* a = this->root;
@@ -849,7 +853,11 @@ class Graph{
             }
         }
 
-        bool Cycle_Detection(int s, int c){
+        /* Returns true if the graph contains a cycle, else false.
+        To initial this function, visited = {}, count = 0
+        Example: Cycle_Detec(s, c, {}, 0);
+        */
+        bool Cycle_Detec(int s, int c, int visited[], int count){
             Node2* a = this->root;
             while (a != NULL && a->data <= c){
                 if (a->data == c){
@@ -876,14 +884,43 @@ class Graph{
                 if (check == true) return true;
                 else{
                     for (int i=0;i<num;i++){
-                        if (Cycle_Detection(s, Ac[i]))
-                            return true;
+                        check = true;
+                        for (int j=0;j<count;j++){
+                            if (visited[j] == Ac[i])
+                                check = false;
+                        }
+                        if (check == true){
+                            int vi[count+1];
+                            for (int k=0;k<count;k++){
+                                vi[k] = visited[k];
+                            }
+                            vi[count] = Ac[i];
+                            if (Cycle_Detec(s, Ac[i], vi, count+1))
+                                return true;
+                        }
                     }
+                    return false;
                 }
             }
             return false;
         }
 
+        /* Returns true if the graph contains a cycle with two node s and c,
+        else false.
+        */
+        bool Cycle_Detection(int s, int c){
+            return Cycle_Detec(s, c, {}, 0);
+        }
+
+        /* What is Minimum Spanning Tree? 
+        Given a connected and undirected graph, a spanning tree of that graph is a subgraph that is a tree and connects 
+        all the vertices together. A single graph can have many different spanning trees. A minimum spanning tree (MST) 
+        or minimum weight spanning tree for a weighted, connected, undirected graph is a spanning tree with a weight less 
+        than or equal to the weight of every other spanning tree. The weight of a spanning tree is the sum of weights given 
+        to each edge of the spanning tree.
+        This function will return a new Graph. Example with Graph G, you want to make a MST for this graph:
+            Graph G_new = G.SpanningTree_Kruskal();
+        */
         Graph SpanningTree_Kruskal(){
             Graph temp;
             Node2* a = this->root;
@@ -910,19 +947,15 @@ class Graph{
             }
             hidden_function::heap_sort(W, S1, S2, ne);
             i = 0;
-            /*for (i = 0; i<ne;i++){
-                std::cout<<W[i]<<" ";
-            }*/
-            // temp.print_graph_data();
             while (i < ne && temp.num_edges() < nn - 1){
                 cout << "i="<< i <<" "<< S1[i]<<" "<< S2[i] <<"\n";
-                if (!temp.Cycle_Detection(S1[i],S2[i]) || !temp.Cycle_Detection(S2[i],S1[i])){
+                int visited[0];
+                if (!temp.Cycle_Detection(S1[i],S2[i])){
                     temp.add_edge(S1[i],S2[i],W[i]);
                     cout << "i="<< i <<" "<< S1[i]<<" "<< S2[i] <<"\n";
                 }
                 i++;
             }
-            // temp.print_graph_data();
             return temp;
         }
 
