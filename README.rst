@@ -42,6 +42,14 @@ or you can add with a sequence numbers of nodes in graph.
 
     add_sequence_node(8);           // Graph will have node 0,1,...,7 (with 8 nodes)
 
+To shows the total number of nodes in the graph::
+
+    G.print_count();
+
+or you can use::
+
+    int c = G.counts();
+
 Edges
 -------
 
@@ -132,7 +140,7 @@ You can get/set the attributes of an edge using subscript notation if the edge a
     int weight;
     weight = G.edge_weight(1, 2);
 
-To check if 2 nodes are close to each other, using bool funcrion ``is_near``.
+To check if 2 nodes are close to each other, using bool function ``is_near``.
 
 .. code-block::
 
