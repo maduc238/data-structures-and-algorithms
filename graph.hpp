@@ -971,11 +971,9 @@ class Graph{
             hidden_function::heap_sort(W, S1, S2, ne);
             i = 0;
             while (i < ne && temp.num_edges() < nn - 1){
-                cout << "i="<< i <<" "<< S1[i]<<" "<< S2[i] <<"\n";
                 int visited[0];
                 if (!temp.Cycle_Detection(S1[i],S2[i])){
                     temp.add_edge(S1[i],S2[i],W[i]);
-                    cout << "i="<< i <<" "<< S1[i]<<" "<< S2[i] <<"\n";
                 }
                 i++;
             }
