@@ -236,6 +236,11 @@ class Graph{
             this->root = NULL;
             this->count = 0;
         }
+
+        ~Graph(){
+            delete[] this->root;
+            this->count = 0;
+        }
         /* A void function, insert a new node to the graph.
         Example: You want to add node 5:
         Graph G;
@@ -855,7 +860,7 @@ class Graph{
             for (int i=0;i<this->count;i++){
                 for (int j=0;j<this->count;j++){
                     for (int k=0;k<this->count;k++){
-                        if (D[i][j] > D[i][k] + D[k][j]){
+                        if (D[i][j] > (D[i][k] + D[k][j])){
                             D[i][j] = D[i][k] + D[k][j];
                             P[i][j] = k;
                         }
@@ -976,6 +981,28 @@ class Graph{
                     temp.add_edge(S1[i],S2[i],W[i]);
                 }
                 i++;
+            }
+            return temp;
+        }
+
+        /* An example graph - to make fat tree topology in data center network */
+        Graph fattree_graph(int k){
+            int lastCore = k*k/4;
+            int lastAggre = lastCore + k*k/2;
+            int lastEdge = lastAggre + k*k/2;
+            int lastServer = lastEdge + k*k*k/4;
+            Graph temp;
+            for (int i=0;i<lastServer;i++){
+                temp.add_node(i+1);
+            }
+            for (int pod=0; pod<k; pod++){
+                for (int aggre=0; aggre<k/2; aggre++){
+                    for (int i=0; i<k/2; i++){
+                        temp.add_edge(lastCore+pod*k/2+aggre+1, 2*lastCore/k*aggre+i+1);
+                        temp.add_edge(lastCore+pod*k/2+aggre+1, lastAggre+pod*k/2+i+1);
+                        temp.add_edge(lastAggre+pod*k/2+i+1, lastEdge+pod*k*k/4+k/2*i+aggre+1);
+                    }
+                }
             }
             return temp;
         }
