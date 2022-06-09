@@ -2,46 +2,17 @@
 #include "sort.hpp"
 #include "queue.hpp"
 #include "stack.hpp"
-using namespace std;
 
-
-/*****************************************************************************
- * The graph algorithm base to Networkx in python
- *
- * Task need to do:
- * breath_first_search and deep_first_search
- * Dijkstra, Bellman-Ford algorithm
- *
- * To run these functions:
- * Initial a new graph:
- * Graph G;
- *
- * Create a new node:
- * G.add_node(1);
- * G.add_node(0);
- * G.add_node(2);
- * (Or you can run function: add_sequence_node, add_node_from,...)
- *
- * Create a new edge:
- * G.add_edge(0,1, 0);  // weight = 0
- *
- * Delete a node:
- * G.delete_node(2);
- *
- * Delete a edge:
- * G.delete_edge(0,1);
- *
- * Print all graph data:
- * G.print_graph_data();
- *
- * And many more functions to do...
-*****************************************************************************/
+/* Configure data type for weight
+You can change it as: int, unsigned int, float, double,...
+*/
+typedef float weight_type;
 
 /* The single node use for edges structure */
 class Node{
     public:
     int data;
-    int weight;
+    weight_type weight;
     Node* next;
 
     Node(){
@@ -64,7 +35,7 @@ class Node2{
         edges = NULL;
     }
 
-    void _add_node(int data, int weight){
+    void _add_node(int data, weight_type weight){
         // First element
         if (edges == NULL){
             edges = new Node();
@@ -79,7 +50,7 @@ class Node2{
             }
             if (a->data == data){
                 if (this->data != data)
-                cout << "Warning: This node already exists in graph\n";
+                std::cout << "Warning: This node already exists in graph\n";
                 return;
             }
             Node* temp = new Node();
@@ -116,31 +87,47 @@ class Node2{
     }
 
     void _delete_node(int node){
-            Node* a = edges;
-            bool check = false;
-            while (a->next != NULL && a->next->data <= node){
-                if (a->next->data == node){
-                    check = true;
-                    break;
-                }
-                a = a->next;
+        Node* a = edges;
+        bool check = false;
+        while (a->next != NULL && a->next->data <= node){
+            if (a->next->data == node){
+                check = true;
+                break;
             }
-            // Delete this node
-            if (check == true){
-                a->next = a->next->next;
-            }
-            else if (a->data == node) edges = edges->next;
-            else
-                cout << "Warning: Can't find node " << node << " in this graph\n";
+            a = a->next;
         }
+        // Delete this node
+        if (check == true){
+            a->next = a->next->next;
+        }
+        else if (a->data == node) edges = edges->next;
+        else
+            std::cout << "Warning: Can't find node " << node << " in this graph\n";
+    }
+
+    void _change_weight(int node, weight_type w){
+        Node* a = edges;
+        bool check = false;
+        while (a != NULL && a->data <= node){
+            if (a->data == node){
+                check = true;
+                break;
+            }
+            a = a->next;
+        }
+        if (check == true)
+            a->weight = w;
+        else
+            std::cout << "Warning: Can't find node " << node << " in this graph\n";
+    }
 };
 namespace hidden_function{
 /* A helper function to print all linked list in the data structure */
 void print_all_edge(Node* node){
     if (node == NULL)
         return;
-    if (node->next == NULL) cout << node->data;
-    else cout << node->data << " - ";
+    if (node->next == NULL) std::cout << node->data;
+    else std::cout << node->data << " - ";
     print_all_edge(node->next);
 }
 
@@ -148,9 +135,9 @@ void print_all_edge(Node* node){
 void print_all_node(Node2* node){
     if (node == NULL)
         return;
-    cout << node->data << ": ";
+    std::cout << node->data << ": ";
     print_all_edge(node->edges);
-    cout << "\n";
+    std::cout << "\n";
     print_all_node(node->next);
 }
 
@@ -177,8 +164,62 @@ void _del(Node2* b, Node2* &a, int node){
         b = b->next;
     }
 }
+
+void print_path(int dest, int idx[], int prev[]){
+    if (dest == -1 || dest == 0) return;
+    std::cout << idx[dest] << " ";
+    print_path(prev[dest], idx, prev);
 }
 
+/**
+ * Quick Sort
+**/
+void swap(weight_type* a, weight_type* b){
+	weight_type t = *a;
+	*a = *b;
+	*b = t;
+}
+void swap(int* a, int* b){
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+void heapify(weight_type arr[], int a1[], int a2[], int n, int i){
+	int largest = i; // Initialize largest as root
+	int l = 2 * i + 1; // left = 2*i + 1
+	int r = 2 * i + 2; // right = 2*i + 2
+	if (l < n && arr[l] > arr[largest])
+		largest = l;
+	if (r < n && arr[r] > arr[largest])
+		largest = r;
+	if (largest != i){
+		swap(&arr[i], &arr[largest]);
+        swap(&a1[i], &a1[largest]);
+        swap(&a2[i], &a2[largest]);
+		heapify(arr, a1, a2, n, largest);
+	}
+}
+void heap_sort(weight_type arr[], int a1[], int a2[], int n){
+	for(int i = n/2 - 1; i >= 0; i--)
+		heapify(arr, a1, a2, n, i);
+	for(int i = n - 1; i > 0; i--){
+		swap(&arr[0], &arr[i]);
+        swap(&a1[0], &a1[i]);
+        swap(&a2[0], &a2[i]);
+		heapify(arr, a1, a2, i, 0);
+	}
+}
+
+int arg_arr(int n, int a[], int len){
+    int i;
+    for (i=0;i<len;i++){
+        if (a[i] == n) break;
+    }
+    return i;
+}
+}
+
+weight_type inf = 99999;
 /* A Graph class. This class represents a undirected graph using adjacency list representation */
 class Graph{
     /* The class members declared as private can be accessed only by the functions inside the class.
@@ -193,6 +234,11 @@ class Graph{
         // Constructor in class Graph
         Graph(){
             this->root = NULL;
+            this->count = 0;
+        }
+
+        ~Graph(){
+            delete[] this->root;
             this->count = 0;
         }
         /* A void function, insert a new node to the graph.
@@ -213,7 +259,7 @@ class Graph{
                     a = a->next;
                 }
                 if (a->data == data){
-                    cout << "Warning: Node " << data << " already exists in this graph\n";
+                    std::cout << "Warning: Node " << data << " already exists in this graph\n";
                     return;
                 }
                 Node2* temp = new Node2();
@@ -257,7 +303,7 @@ class Graph{
         }
 
         /* Insert a new edge in this graph without weight. The two edges in these variables must exist in graph.
-        If node 2 and 3 are already existed in graph: (The weight will be set 0)
+        If node 2 and 3 are already existed in graph: (The weight will be set 0.0)
         add_edge(2, 3); */
         void add_edge(int node1, int node2){
             Node2* a = this->root;
@@ -271,7 +317,7 @@ class Graph{
                 a = a->next;
             }
             if (c != 2 && node1 != node2){
-                cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                std::cout << "Waring: There is some node(s) that does not exist in this graph\n";
                 return;
             }
             a = this->root;
@@ -284,9 +330,9 @@ class Graph{
         }
 
         /* Insert a new edge in this graph. The two edges in these variables must exist in graph.
-        If node 2 and 3 are already existed in graph and weight is 4:
-        add_edge(2, 3, 4); */
-        void add_edge(int node1, int node2, int weight){
+        If node 2 and 3 are already existed in graph and weight is 4.5:
+        add_edge(2, 3, 4.5); */
+        void add_edge(int node1, int node2, weight_type weight){
             Node2* a = this->root;
             int c = 0;
             int n_max = max(node1,node2);
@@ -298,7 +344,7 @@ class Graph{
                 a = a->next;
             }
             if (c != 2 && node1 != node2){
-                cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                std::cout << "Waring: There is some node(s) that does not exist in this graph\n";
                 return;
             }
             a = this->root;
@@ -310,9 +356,34 @@ class Graph{
             }
         }
 
+        /* Change weight for edge (node1 - node2) */
+        void change_weight(int node1, int node2, weight_type weight){
+            Node2* a = this->root;
+            int c = 0;
+            int n_max = max(node1,node2);
+            bool Result = false;
+            // A checking loop, consider available nodes
+            while (a != NULL && a->data <= n_max){
+                if (a->data == node1 || a->data == node2)
+                    c++;
+                a = a->next;
+            }
+            if (c != 2 && node1 != node2){
+                std::cout << "Waring: There is some node(s) that does not exist in this graph\n";
+                return;
+            }
+            a = this->root;
+            while (a->data <= node1 || a->data <= node2){
+                if (a->data == node1) a->_change_weight(node2, weight);
+                if (a->data == node2) a->_change_weight(node1, weight);
+                if (a->next == NULL) break;
+                a = a->next;
+            }
+        }
+
         /* A helper function, shows the total number of nodes in the graph */
         void print_count(){
-            cout << this->count <<"\n";
+            std::cout << this->count <<"\n";
         }
         /* A helper function, return the total number of nodes in the graph */
         int counts(){
@@ -323,22 +394,25 @@ class Graph{
         Just a function that supports displaying data, no application to the algorithm.*/
         void print_graph_data(){
             if (this->root == NULL)
-                cout << "Warning: There are no nodes in this graph\n";
+                std::cout << "Warning: There are no nodes in this graph\n";
             hidden_function::print_all_node(this->root);
         }
 
-        /*  A void function print all nodes in graph G. If graph G have nodes 2,3,4,6,7:
+        /* A void function help displaying data with a Graph matrix */
+        void print_matrix();
+
+        /* A void function print all nodes in graph G. If graph G have nodes 2,3,4,6,7:
         G.print_nodes();
         -> All nodes: 2, 3, 4, 6, 7 */
         void print_nodes(){
             Node2* a = this->root;
-            cout << "All nodes: ";
+            std::cout << "All nodes: ";
             while (a != NULL){
-                cout << a->data;
-                if (a->next != NULL) cout << ", ";
+                std::cout << a->data;
+                if (a->next != NULL) std::cout << ", ";
                 a = a->next;
             }
-            cout << "\n";
+            std::cout << "\n";
         }
 
         /*  A void function print all nodes in graph G. If graph G have egdes (0-1), (1-3), (3,2), (2,1):
@@ -346,22 +420,61 @@ class Graph{
         -> All edges: (0 - 1), (1 - 2), (1 - 3), (2 - 3) */
         void print_edges(){
             Node2* a = this->root;
-            cout << "All edges: ";
+            std::cout << "All edges: ";
             while (a != NULL){
-                while (a->edges != NULL){
-                    if (a->data <= a->edges->data)
-                        cout <<"("<<a->data<<" - "<<a->edges->data<<")";
-                    if (a->edges->next != NULL && a->data <= a->edges->next->data) cout<< ", ";
-                    a->edges = a->edges->next;
+                Node* b = a->edges;
+                while (b != NULL){
+                    if (a->data <= b->data)
+                        std::cout <<"("<<a->data<<" - "<<b->data<<")";
+                    if (b->next != NULL && a->data <= b->next->data) std::cout<< ", ";
+                    b = b->next;
                 }
                 a = a->next;
             }
-            cout << "\n";
+            std::cout << "\n";
+        }
+
+        int num_edges(){
+            Node2* a = this->root;
+            int c=0;
+            while (a != NULL){
+                Node* b = a->edges;
+                while (b != NULL){
+                    if (a->data <= b->data) c++;
+                    b = b->next;
+                }
+                a = a->next;
+            }
+            return c;
+        }
+
+        /* Return degree of node n
+        */
+        int node_degree(int n){
+            Node2* a = this->root;
+            bool check = false;
+            while (a != NULL && a->data <= n){
+                if (a->data == n){
+                    check = true;
+                    break;
+                }
+                a = a->next;
+            }
+            if (check == false){
+                return 0;
+            }
+            Node* b = a->edges;
+            int c = 0;
+            while (b != NULL){
+                c++;
+                b = b->next;
+            }
+            return c;
         }
 
         /* Given a node name n, this function will delete this node from the graph.
         If node 2 is already existed in graph:
-        delete_node(2); */
+        G.delete_node(2); */
         void delete_node(int n){
             Node2* a = this->root;
             bool check = false;
@@ -388,7 +501,7 @@ class Graph{
                 this->root = this->root->next;
                 }
             else
-                cout << "Warning: Can't find node " << n << " in this graph\n";
+                std::cout << "Warning: Can't find node " << n << " in this graph\n";
         }
 
         /* Delete a edge connected by two nodes */
@@ -412,22 +525,23 @@ class Graph{
         }
 
         /* The function returns the weight of edge */
-        int edge_weight(int node1, int node2){
+        weight_type edge_weight(int node1, int node2){
             Node2* a = this->root;
-            int result = -1;
+            weight_type result = inf;
             while(a != NULL && a->data <= node1){
                 if(a->data == node1){
-                    while(a->edges != NULL && a->edges->data <= node2){
-                        if (a->edges->data == node2){
-                            result = a->edges->weight;
+                    Node* b = a->edges;
+                    while(b != NULL && b->data <= node2){
+                        if (b->data == node2){
+                            result = b->weight;
                             break;
                         }
-                        a->edges = a->edges->next;
+                        b = b->next;
                     }
                 }
                 a = a->next;
             }
-            if (result == -1){ cout << "Warning: This edge does not exist in graph\n"; }
+            if (result == inf){ std::cout << "Warning: This edge does not exist in graph\n"; }
 
             return result;
         }
@@ -439,11 +553,11 @@ class Graph{
         void add_sequence_node(int number_node){
             if (this->root != NULL){
                 // This graph did not empty
-                cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
+                std::cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
                 return;
             }
             else if (number_node < 1){
-                cout << "Warning: number_node must be greater than 1\n";
+                std::cout << "Warning: number_node must be greater than 1\n";
                 return;
             }
             // Else, initial new node
@@ -473,7 +587,7 @@ class Graph{
                 a = a->next;
             }
             if (check == false){
-                cout << "Warning: Can't find node " << n << " in this graph\n";
+                std::cout << "Warning: Can't find node " << n << " in this graph\n";
                 return;
             }
             // Start to print neighbors
@@ -488,11 +602,11 @@ class Graph{
         void add_nodes_from(int nodes[], int n_nodes){
             if (this->root != NULL){
                 // This graph did not empty
-                cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
+                std::cout << "Warning: Some nodes still exist in the graph, this graph must be empty\n";
                 return;
             }
             else if (n_nodes < 1){
-                cout << "Warning: number_node must be greater than 1\n";
+                std::cout << "Warning: number_node must be greater than 1\n";
                 return;
             }
             // Using heap sort to sort the array nodes[] from sort.hpp
@@ -511,7 +625,7 @@ class Graph{
             }
         }
 
-        /* Kiem tra n1 va n2 xem ca hai co gan nhau khong? */
+        /* Check if node n1 and node n2 are neighbor */
         bool is_near(int n1, int n2){
             Node2* a = this->root;
             bool check = false;
@@ -566,9 +680,24 @@ class Graph{
             return p;
         }
 
+        void print_breath_first_search(int n){
+            int *p;
+            int node_idx[this->count];
+            p = breath_first_search(n);
+            for (int i=0; i<this->count; i++){
+                node_idx[i] = *(p+i);
+            }
+            delete[] p;
+            for (int i=0; i<this->count; i++){
+                std::cout << node_idx[i] << " ";
+            }
+            std::cout << "\n";
+        }
+
         /* DFS traversal of the vertices reachable from node n */
-        int* deep_first_search(int n){
-            struct stack* s;
+        int* depth_first_search(int n){
+            struct stack p;
+            st *s=&p;
             init_st(s);
             int arr2[this->count]={};
             int result2[this->count];
@@ -587,62 +716,341 @@ class Graph{
                         push(s, adjVertex);
                     }
                     temp2 = temp2->next;
-                }           
-            
+                }
+
             }
             int* q=result2;
             return q;
-        }     
+        }
+        void print_depth_first_search(int n){
+            int *p;
+            int node_idx[this->count];
+            p = depth_first_search(n);
+            for (int i=0; i<this->count; i++){
+                node_idx[i] = *(p+i);
+            }
+            delete[] p;
+            for (int i=0; i<this->count; i++){
+                std::cout << node_idx[i] << " ";
+            }
+            std::cout << "\n";
+        }
+
+        /* The main function that calculates distances of
+        shortest paths and show these paths from src to all vertices
+        */
         void Dijkstra(int n){
+            // int *node_idx = new int[this->count];
             int node_idx[this->count];
             int F[this->count];
-            Node2* a = this->root;
-            int i = 0;
-            while (a != NULL){
-                node_idx[i] = a->data;
+            int *p;
+            p = new int[this->count];
+            p = breath_first_search(n);
+            for (int i=0; i<this->count; i++){
+                node_idx[i] = *(p+i);
                 F[i] = 0;
-                a = a->next;
-                i ++;
             }
-            // cai dat
-            int inf = 999;
-            int dist[this->count];
+            delete[] p;
+            weight_type dist[this->count];
             int prev[this->count];
             F[0] = 1;   // v0 in F
             dist[0] = 0;
             prev[0] = -1;
             for (int i=1; i<this->count; i++){
-                if (is_near(n, node_idx[i])){
-                    dist[i] = edge_weight(n, node_idx[i]);
-                    prev[i] = n;
-                }
-                else{
-                    dist[i] = inf;
-                    prev[i] = -1;
-                }
+                dist[i] = inf;
+                prev[i] = -1;
+            }
+            Node2* a = this->root;
+            while (a != NULL){
+                if (a->data == n) break;
+                a = a->next;
+            }
+            Node* b = a->edges;
+            while (b != NULL){
+                int idx = hidden_function::arg_arr(b->data, node_idx, this->count);
+                dist[idx] = edge_weight(n, b->data);
+                prev[idx] = 0;
+                b = b->next;
             }
             for (int i=1; i<this->count; i++){
-                int dist_min = inf;
+                weight_type dist_min = inf;
                 int m_min = -1;
                 for (int m=1; m<this->count; m++){
                     if ((F[m] == 0) && (dist[m] < dist_min)){
                         dist_min = dist[m];
-                        m_min = m;}
+                        m_min = m;
+                    }
                 }
                 if (m_min == -1) continue;
                 F[m_min] = 1;
                 for (int k=1; k<this->count; k++){
-                    if ((F[k] == 0) && (is_near(node_idx[m_min],node_idx[k])) && (dist[k] > (dist[m_min] + edge_weight(node_idx[m_min],node_idx[k])))){
-                        dist[k] = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
-                        prev[k] = node_idx[m_min];
+                    if (!F[k] && (is_near(node_idx[m_min],node_idx[k]))){
+                        weight_type weight = dist[m_min] + edge_weight(node_idx[m_min],node_idx[k]);
+                        if (dist[k] > weight){
+                            dist[k] = weight;
+                            prev[k] = m_min;
+                        }
                     }
                 }
             }
-            // print prev here
+            /*
+            std::cout << "All nodes: ";
             for (int i=0; i<this->count; i++){
-                cout << prev[i] << " , ";
+                std::cout << node_idx[i] << ", ";
             }
-            // print step…
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << prev[i] << ", ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << dist[i] << ", ";
+            }
+            std::cout << "\n";
+            */
+            std::cout << "Dijkstra algorithm:\n";
+            for (int i=1; i<this->count; i++){
+                std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
+                hidden_function::print_path(i, node_idx, prev);
+                std::cout << n << "\n";
+            }
+        }
 
+        /* The main function that finds shortest distances from src to all
+        other vertices using Bellman-Ford algorithm.
+        */
+        void Bellman_Ford(int n){
+            int node_idx[this->count];
+            int *p;
+            p = new int[this->count];
+            p = breath_first_search(n);
+            for (int i=0; i<this->count; i++){
+                node_idx[i] = *(p+i);
+            }
+            delete[] p;
+            weight_type dist[this->count];
+            int prev[this->count];
+            dist[0] = 0;
+            prev[0] = -1;
+            for (int i=1; i<this->count; i++){
+                dist[i] = inf;
+            }
+            bool key = false;
+            while (key == false){
+                key = true;
+                for (int u=0; u<this->count; u++){
+                    for (int v=u+1; v<this->count; v++){
+                        if (is_near(node_idx[u],node_idx[v])){
+                            weight_type weight = dist[u] + edge_weight(node_idx[u],node_idx[v]);
+                            if (weight < dist[v]){
+                                dist[v] = weight;
+                                prev[v] = u;
+                                key = false;
+                            }
+                        }
+                    }
+                }
+            }
+            /*
+            for (int i=0; i<this->count; i++){
+                std::cout << node_idx[i] << " ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << prev[i] << " ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << dist[i] << " ";
+            }
+            std::cout << "\n";
+            */
+            std::cout << "Bellman-Ford algorithm:\n";
+            for (int i=1; i<this->count; i++){
+                std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
+                hidden_function::print_path(i, node_idx, prev);
+                std::cout << n << "\n";
+            }
+        }
+
+        /* The Floyd Warshall Algorithm is for solving the All Pairs Shortest Path problem.
+        The problem is to find shortest distances between every pair of vertices in a given edge
+        weighted directed Graph. This function print Shortest distance matrix
+        */
+        void Floyd(){
+            int node_idx[this->count];
+            Node2* a = this->root;
+            int i = 0;
+            while (a != NULL){
+                node_idx[i] = a->data;
+                a = a->next;
+                i ++;
+            }
+            weight_type D[this->count][this->count];
+            int P[this->count][this->count];
+            for (int i=0;i<this->count;i++){
+                for (int j=i;j<this->count;j++){
+                    P[i][j] = -1;
+                    P[j][i] = -1;
+                    if (i == j){
+                        D[i][j] = 0; D[j][i] = 0;
+                    }
+                    else if (is_near(node_idx[i],node_idx[j])){
+                        D[i][j] = edge_weight(node_idx[i],node_idx[j]);
+                        D[j][i] = D[i][j];
+                    }
+                    else{
+                        D[i][j] = inf; D[j][i] = inf;
+                    }
+                }
+            }
+            for (int i=0;i<this->count;i++){
+                for (int j=0;j<this->count;j++){
+                    for (int k=0;k<this->count;k++){
+                        if (D[i][j] > (D[i][k] + D[k][j])){
+                            D[i][j] = D[i][k] + D[k][j];
+                            P[i][j] = k;
+                        }
+                    }
+                }
+            }
+            std::cout << "Floyd algorithm\n\t";
+            for (int i=0;i<this->count;i++){
+                std::cout << node_idx[i] << "\t";
+            }
+            std::cout << "\n\n";
+            for (int i=0;i<this->count;i++){
+                std::cout << node_idx[i] << "\t";
+                for (int j=0;j<this->count;j++){
+                    std::cout << D[i][j] << "\t";
+                }
+                std::cout << "\n";
+            }
+        }
+
+        /* Returns true if the graph contains a cycle, else false.
+        To initial this function, visited = {}, count = 0
+        Example: Cycle_Detec(s, c, {}, 0);
+        */
+        bool Cycle_Detec(int s, int c, int visited[], int count){
+            Node2* a = this->root;
+            while (a != NULL && a->data <= c){
+                if (a->data == c){
+                    break;
+                }
+                a = a->next;
+            }
+            Node* b = a->edges;
+            int num = node_degree(c);
+            if (num == 0) return false;
+            else {
+                int Ac[num];
+                for (int i=0;i<num;i++){
+                    Ac[i] = b->data;
+                    b = b->next;
+                }
+                bool check = false;
+                for (int i=0;i<num;i++){
+                    if (Ac[i] == s){
+                        check = true;
+                        break;
+                    }
+                }
+                if (check == true) return true;
+                else{
+                    for (int i=0;i<num;i++){
+                        check = true;
+                        for (int j=0;j<count;j++){
+                            if (visited[j] == Ac[i])
+                                check = false;
+                        }
+                        if (check == true){
+                            int vi[count+1];
+                            for (int k=0;k<count;k++){
+                                vi[k] = visited[k];
+                            }
+                            vi[count] = Ac[i];
+                            if (Cycle_Detec(s, Ac[i], vi, count+1))
+                                return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        /* Returns true if the graph contains a cycle with two node s and c,
+        else false.
+        */
+        bool Cycle_Detection(int s, int c){
+            return Cycle_Detec(s, c, {}, 0);
+        }
+
+        /* What is Minimum Spanning Tree?
+        Given a connected and undirected graph, a spanning tree of that graph is a subgraph that is a tree and connects
+        all the vertices together. A single graph can have many different spanning trees. A minimum spanning tree (MST)
+        or minimum weight spanning tree for a weighted, connected, undirected graph is a spanning tree with a weight less
+        than or equal to the weight of every other spanning tree. The weight of a spanning tree is the sum of weights given
+        to each edge of the spanning tree.
+        This function will return a new Graph. Example with Graph G, you want to make a MST for this graph:
+            Graph G_new = G.SpanningTree_Kruskal();
+        */
+        Graph SpanningTree_Kruskal(){
+            Graph temp;
+            Node2* a = this->root;
+            int ne = num_edges();
+            int nn = 0;
+            int S1[ne], S2[ne];
+            weight_type W[ne];
+            int i = 0;
+            while (a != NULL){
+                Node* b = a->edges;
+                while (b != NULL){
+                    if (a->data <= b->data){
+                        S1[i] = a->data;
+                        S2[i] = b->data;
+                        W[i] = b->weight;
+                        i++;
+                    }
+                    b = b->next;
+                }
+                delete[] b;
+                temp.add_node(a->data);
+                nn++;
+                a = a->next;
+            }
+            hidden_function::heap_sort(W, S1, S2, ne);
+            i = 0;
+            while (i < ne && temp.num_edges() < nn - 1){
+                int visited[0];
+                if (!temp.Cycle_Detection(S1[i],S2[i])){
+                    temp.add_edge(S1[i],S2[i],W[i]);
+                }
+                i++;
+            }
+            return temp;
         }
 };
+
+/* An example graph - to make fat tree topology in data center network */
+Graph fattree_graph(int k){
+    int lastCore = k*k/4;
+    int lastAggre = lastCore + k*k/2;
+    int lastEdge = lastAggre + k*k/2;
+    int lastServer = lastEdge + k*k*k/4;
+    Graph temp;
+    for (int i=0;i<lastServer;i++){
+        temp.add_node(i+1);
+    }
+    for (int pod=0; pod<k; pod++){
+        for (int aggre=0; aggre<k/2; aggre++){
+            for (int i=0; i<k/2; i++){
+                temp.add_edge(lastCore+pod*k/2+aggre+1, 2*lastCore/k*aggre+i+1, 1);
+                temp.add_edge(lastCore+pod*k/2+aggre+1, lastAggre+pod*k/2+i+1, 1);
+                temp.add_edge(lastAggre+pod*k/2+i+1, lastEdge+pod*k*k/4+k/2*i+aggre+1, 1);
+            }
+        }
+    }
+    return temp;
+}

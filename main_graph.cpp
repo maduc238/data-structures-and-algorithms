@@ -2,41 +2,35 @@
 #include "graph.hpp"
 
 int main(){
-    /* Create a graph given in the above diagram
-            1 --- 5
-          /   \  /
-        0      3 --- 6
-          \     \
-            2 -- 4
-    */
     Graph G;
-    G.add_node(0);
-    G.add_node(1);
-    G.add_node(2);
-    G.add_edge(0,1, 1);
-    G.add_edge(0,2, 2);
-    G.add_node(4);
-    G.add_edge(2,4, 3);
-    G.add_node(5);
-    G.add_edge(1,5, 4);
-    G.add_node(3);
-    G.add_edge(1,3, 5);
-    G.add_edge(3,5, 6);
-    G.add_edge(3,4, 7);
-    G.add_node(6);
-    G.add_edge(3,6, 8);
-    int i,j;
-    for(i=0;i<G.counts();i++){
-        printf("%d\n",G.breath_first_search(0)[i]);
-    }
-    for(j=0;j<G.counts();j++){
-        printf("%d\n",*(G.deep_first_search(0)+j));
-    }
+    G.add_sequence_node(9);
+    G.add_edge(0,1,4.1);
+    G.add_edge(1,2,8.2);
+    G.add_edge(2,3,7.1);
+    G.add_edge(3,4,9.5);
+    G.add_edge(4,5,10.1);
+    G.add_edge(5,6,2.0);
+    G.add_edge(6,7,1.3);
+    G.add_edge(7,8,7.4);
+    G.add_edge(0,7,8.8);
+    G.add_edge(1,7,11.6);
+    G.add_edge(6,8,6.9);
+    G.add_edge(2,8,2.3);
+    G.add_edge(2,5,4.1);
+    G.add_edge(3,5,14.5);
+    G.print_depth_first_search(0);
+    G.print_depth_first_search(0);
+    G.print_breath_first_search(0);
+    G.print_breath_first_search(0);
+    Graph g = fattree_graph(10);
+    g.print_depth_first_search(1);
+    g.print_depth_first_search(1);
+    g.print_breath_first_search(1);
+    g.print_breath_first_search(1);
 
+    //G.print_graph_data();
+    //G.Dijkstra(0);
     // G.print_graph_data();
-    // cout << "----------------\n";
-    // G.delete_node(2);
-    // G.print_graph_data();
-    G.Dijkstra(0);
+    //G.Bellman_Ford(0);
     return 0;
 }

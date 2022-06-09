@@ -1,5 +1,5 @@
 #include <iostream>
-#define MAX 50
+#define MAX 500
 struct queue {
     int element[MAX];
     int fron;

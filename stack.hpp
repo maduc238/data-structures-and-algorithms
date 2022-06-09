@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 50
+#define MAX 500
 
 
 struct stack{
@@ -30,12 +30,12 @@ int isEmp(st *s) {
 void push(st *s, int new_data) {
     if (isFull(s)) {
         printf("\nStack đã đầy\n");
-    }     
+    }
     else {
         s->top++;
         s->data[s->top] = new_data;
     }
-    
+
 }
 
 int pop(st *s) {
@@ -43,7 +43,7 @@ int pop(st *s) {
     if (isEmp(s)) {
         printf("\nStack rỗng\n");
         temp=-1;
-    } 
+    }
     else {
         temp = s->data[s->top];
         s->top--;
