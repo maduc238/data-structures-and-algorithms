@@ -760,6 +760,94 @@ class Graph{
                 prev[idx] = 0;
                 b = b->next;
             }
+            delete[] b;
+            for (int i=1; i<this->count; i++){
+                weight_type dist_min = inf;
+                int m_min = -1;
+                for (int m=1; m<this->count; m++){
+                    if ((F[m] == 0) && (dist[m] < dist_min)){
+                        dist_min = dist[m];
+                        m_min = m;
+                    }
+                }
+                if (m_min == -1) continue;
+                F[m_min] = 1;
+                a = this->root;
+                while (a != NULL){
+                    if (a->data == node_idx[m_min]) break;
+                    a = a->next;
+                }
+                b = a->edges;
+                while (b != NULL){
+                    int k = hidden_function::arg_arr(b->data, node_idx, this->count);
+                    if (!F[k]){
+                        weight_type distance = dist[m_min] + b->weight;
+                        if (dist[k] > distance){
+                            dist[k] = distance;
+                            prev[k] = m_min;
+                        }
+                    }
+                    b = b->next;
+                }
+                delete[] b;
+            }
+            delete[] b;
+            /*
+            for (int i=0; i<this->count; i++){
+                std::cout << node_idx[i] << " ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << prev[i] << " ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << dist[i] << " ";
+            }
+            std::cout << "\n";*/
+            std::cout << "Dijkstra algorithm:\n";
+            for (int i=1; i<this->count; i++){
+                std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
+                hidden_function::print_path(i, node_idx, prev);
+                std::cout << n << "\n";
+            }
+        }
+
+        void Dijkstra_old(int n){
+            int node_idx[this->count];
+            int F[this->count];
+            weight_type dist[this->count];
+            int prev[this->count];
+            node_idx[0] = n;
+            F[0] = 1;   // v0 in F
+            dist[0] = 0;
+            prev[0] = -1;
+            Node2* a = this->root;
+            int i = 1;
+            while (a != NULL){
+                if (a->data == n){
+                    a = a->next;
+                    continue;
+                }
+                node_idx[i] = a->data;
+                F[i] = 0;
+                dist[i] = inf;
+                prev[i] = -1;
+                i++;
+                a = a->next;
+            }
+            a = this->root;
+            while (a != NULL){
+                if (a->data == n) break;
+                a = a->next;
+            }
+            Node* b = a->edges;
+            while (b != NULL){
+                int idx = hidden_function::arg_arr(b->data, node_idx, this->count);
+                dist[idx] = b->weight;
+                prev[idx] = 0;
+                b = b->next;
+            }
             for (int i=1; i<this->count; i++){
                 weight_type dist_min = inf;
                 int m_min = -1;
