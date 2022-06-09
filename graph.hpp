@@ -791,7 +791,6 @@ class Graph{
                 }
                 delete[] b;
             }
-            delete[] b;
             /*
             for (int i=0; i<this->count; i++){
                 std::cout << node_idx[i] << " ";
@@ -928,7 +927,6 @@ class Graph{
                         int v = hidden_function::arg_arr(b->data, node_idx, this->count);
                         weight_type distance = dist[u] + b->weight;
                         if (distance < dist[v]){
-                            //std::cout << (dist[u] + b->weight) << " < " << dist[v] << "\n";
                             dist[v] = dist[u] + b->weight;
                             prev[v] = u;
                             key = false;
@@ -1069,6 +1067,129 @@ class Graph{
                 }
                 std::cout << "\n";
             }
+        }
+
+        /* Print shortest path from node n1 to node n2 */
+        void Shortest_path_Dijkstra(int n1, int n2){
+            int node_idx[this->count];
+            int F[this->count];
+            weight_type dist[this->count];
+            int prev[this->count];
+            node_idx[0] = n2;
+            F[0] = 1;   // v0 in F
+            dist[0] = 0;
+            prev[0] = -1;
+            Node2* a = this->root;
+            int i = 1;
+            while (a != NULL){
+                if (a->data == n2){
+                    a = a->next;
+                    continue;
+                }
+                node_idx[i] = a->data;
+                F[i] = 0;
+                dist[i] = inf;
+                prev[i] = -1;
+                i++;
+                a = a->next;
+            }
+            a = this->root;
+            while (a != NULL){
+                if (a->data == n2) break;
+                a = a->next;
+            }
+            Node* b = a->edges;
+            while (b != NULL){
+                int idx = hidden_function::arg_arr(b->data, node_idx, this->count);
+                dist[idx] = b->weight;
+                prev[idx] = 0;
+                b = b->next;
+            }
+            delete[] b;
+            for (int i=1; i<this->count; i++){
+                weight_type dist_min = inf;
+                int m_min = -1;
+                for (int m=1; m<this->count; m++){
+                    if ((F[m] == 0) && (dist[m] < dist_min)){
+                        dist_min = dist[m];
+                        m_min = m;
+                    }
+                }
+                if (m_min == -1) continue;
+                F[m_min] = 1;
+                a = this->root;
+                while (a != NULL){
+                    if (a->data == node_idx[m_min]) break;
+                    a = a->next;
+                }
+                b = a->edges;
+                while (b != NULL){
+                    int k = hidden_function::arg_arr(b->data, node_idx, this->count);
+                    if (!F[k]){
+                        weight_type distance = dist[m_min] + b->weight;
+                        if (dist[k] > distance){
+                            dist[k] = distance;
+                            prev[k] = m_min;
+                        }
+                    }
+                    b = b->next;
+                }
+                delete[] b;
+            }
+            std::cout<<"From "<< n1 <<" to "<< n2 <<": ";
+            hidden_function::print_path(hidden_function::arg_arr(n1, node_idx, this->count),
+                node_idx, prev);
+            std::cout << n2 << "\n";
+        }
+
+        /* Print shortest path from node n1 to node n2 */
+        void Shortest_path_Bellman_Ford(int n1, int n2){
+            int node_idx[this->count];
+            weight_type dist[this->count];
+            int prev[this->count];
+            node_idx[0] = n2;
+            dist[0] = 0;
+            prev[0] = -1;
+            Node2* a = this->root;
+            int i = 1;
+            while (a != NULL){
+                if (a->data == n2){
+                    a = a->next;
+                    continue;
+                }
+                prev[i] = -1;
+                node_idx[i] = a->data;
+                dist[i] = inf;
+                i++;
+                a = a->next;
+            }
+            bool key = false;
+            while (!key){
+                key = true;
+                for (int u=0; u<this->count; u++){
+                    a = this->root;
+                    while (a != NULL){
+                        if (a->data == node_idx[u]) break;
+                        a = a->next;
+                    }
+                    Node* b = a->edges;
+                    while (b != NULL){
+                        int v = hidden_function::arg_arr(b->data, node_idx, this->count);
+                        weight_type distance = dist[u] + b->weight;
+                        if (distance < dist[v]){
+                            dist[v] = dist[u] + b->weight;
+                            prev[v] = u;
+                            key = false;
+                        }
+                        b = b->next;
+                    }
+                    delete[] b;
+                }
+            }
+            std::cout<<"From "<< n1 <<" to "<< n2 <<": ";
+            hidden_function::print_path(hidden_function::arg_arr(n1, node_idx, this->count),
+                node_idx, prev);
+            std::cout << n2 << "\n";
         }
 
         /* Returns true if the graph contains a cycle, else false.

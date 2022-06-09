@@ -191,6 +191,21 @@ Return::
     7       8.8     11.6    7.4     14.5    13.4    3.3     1.3     0       7.4
     8       14.3    10.2    2       9.1     16.2    6.1     6.9     7.4     0
 
+To show shortest path from node n1 to node n2, with Fat tree topology ``Graph G = fattree_graph(30);``::
+
+    int n1 = 2308, n2 = 2001;
+    std::cout << "Dijkstra:\n";
+    G.Shortest_path_Dijkstra(n1,n2);
+    // or you can use
+    G.Shortest_path_Bellman_Ford(n1,n2);
+
+Return::
+
+    Dijkstra:
+    From 2308 to 2001: 2308 754 301 1 271 734 2001
+    Bellman_Ford:
+    From 2308 to 2001: 2308 754 301 1 271 734 2001
+
 In graph theory, a cycle in a graph is a non-empty trail in which only the first and last vertices are 
 equal. A directed cycle in a directed graph is a non-empty directed trail in which only the first and 
 last vertices are equal. A graph without cycles is called an acyclic graph. A directed graph without 
