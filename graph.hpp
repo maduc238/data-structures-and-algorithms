@@ -61,7 +61,7 @@ class Node2{
                     a->next = temp;
                     // Exchange two data of nodes
                     int temp_data = a->data;
-                    int temp_weight = a->weight;
+                    weight_type temp_weight = a->weight;
                     a->data = a->next->data;
                     a->weight = a->next->weight;
                     a->next->data = temp_data;
@@ -77,7 +77,7 @@ class Node2{
                 a->next = temp;
                 // Exchange two data of nodes
                 int temp_data = a->data;
-                int temp_weight = a->weight;
+                weight_type temp_weight = a->weight;
                 a->data = a->next->data;
                 a->weight = a->next->weight;
                 a->next->data = temp_data;
@@ -126,8 +126,8 @@ namespace hidden_function{
 void print_all_edge(Node* node){
     if (node == NULL)
         return;
-    if (node->next == NULL) std::cout << node->data;
-    else std::cout << node->data << " - ";
+    if (node->next == NULL) std::cout << node->data << " (" << node->weight << ")";
+    else std::cout << node->data << " (" << node->weight << ") - ";
     print_all_edge(node->next);
 }
 
@@ -689,7 +689,7 @@ class Graph{
             }
             delete[] p;
             for (int i=0; i<this->count; i++){
-                std::cout << node_idx[i] << " ";
+                std::cout << node_idx[i] << ", ";
             }
             std::cout << "\n";
         }
@@ -726,27 +726,29 @@ class Graph{
         shortest paths and show these paths from src to all vertices
         */
         void Dijkstra(int n){
-            // int *node_idx = new int[this->count];
             int node_idx[this->count];
             int F[this->count];
-            int *p;
-            p = new int[this->count];
-            p = breath_first_search(n);
-            for (int i=0; i<this->count; i++){
-                node_idx[i] = *(p+i);
-                F[i] = 0;
-            }
-            delete[] p;
             weight_type dist[this->count];
             int prev[this->count];
+            node_idx[0] = n;
             F[0] = 1;   // v0 in F
             dist[0] = 0;
             prev[0] = -1;
-            for (int i=1; i<this->count; i++){
+            Node2* a = this->root;
+            int i = 1;
+            while (a != NULL){
+                if (a->data == n){
+                    a = a->next;
+                    continue;
+                }
+                node_idx[i] = a->data;
+                F[i] = 0;
                 dist[i] = inf;
                 prev[i] = -1;
+                i++;
+                a = a->next;
             }
-            Node2* a = this->root;
+            a = this->root;
             while (a != NULL){
                 if (a->data == n) break;
                 a = a->next;
@@ -754,7 +756,7 @@ class Graph{
             Node* b = a->edges;
             while (b != NULL){
                 int idx = hidden_function::arg_arr(b->data, node_idx, this->count);
-                dist[idx] = edge_weight(n, b->data);
+                dist[idx] = b->weight;
                 prev[idx] = 0;
                 b = b->next;
             }
@@ -779,21 +781,20 @@ class Graph{
                     }
                 }
             }
+            delete[] b;
             /*
-            std::cout << "All nodes: ";
             for (int i=0; i<this->count; i++){
-                std::cout << node_idx[i] << ", ";
+                std::cout << node_idx[i] << " ";
             }
             std::cout << "\n";
             for (int i=0; i<this->count; i++){
-                std::cout << prev[i] << ", ";
+                std::cout << prev[i] << " ";
             }
             std::cout << "\n";
             for (int i=0; i<this->count; i++){
-                std::cout << dist[i] << ", ";
+                std::cout << dist[i] << " ";
             }
-            std::cout << "\n";
-            */
+            std::cout << "\n";*/
             std::cout << "Dijkstra algorithm:\n";
             for (int i=1; i<this->count; i++){
                 std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
@@ -807,19 +808,88 @@ class Graph{
         */
         void Bellman_Ford(int n){
             int node_idx[this->count];
-            int *p;
-            p = new int[this->count];
-            p = breath_first_search(n);
-            for (int i=0; i<this->count; i++){
-                node_idx[i] = *(p+i);
-            }
-            delete[] p;
             weight_type dist[this->count];
             int prev[this->count];
+            node_idx[0] = n;
             dist[0] = 0;
             prev[0] = -1;
-            for (int i=1; i<this->count; i++){
+            Node2* a = this->root;
+            int i = 1;
+            while (a != NULL){
+                if (a->data == n){
+                    a = a->next;
+                    continue;
+                }
+                prev[i] = -1;
+                node_idx[i] = a->data;
                 dist[i] = inf;
+                i++;
+                a = a->next;
+            }
+            bool key = false;
+            while (!key){
+                key = true;
+                for (int u=0; u<this->count; u++){
+                    a = this->root;
+                    while (a != NULL){
+                        if (a->data == node_idx[u]) break;
+                        a = a->next;
+                    }
+                    Node* b = a->edges;
+                    while (b != NULL){
+                        int v = hidden_function::arg_arr(b->data, node_idx, this->count);
+                        weight_type distance = dist[u] + b->weight;
+                        if (distance < dist[v]){
+                            //std::cout << (dist[u] + b->weight) << " < " << dist[v] << "\n";
+                            dist[v] = dist[u] + b->weight;
+                            prev[v] = u;
+                            key = false;
+                        }
+                        b = b->next;
+                    }
+                    delete[] b;
+                }
+            }
+            /*
+            for (int i=0; i<this->count; i++){
+                std::cout << node_idx[i] << " ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << prev[i] << " ";
+            }
+            std::cout << "\n";
+            for (int i=0; i<this->count; i++){
+                std::cout << dist[i] << " ";
+            }
+            std::cout << "\n";*/
+            std::cout << "Bellman-Ford algorithm:\n";
+            for (int i=1; i<this->count; i++){
+                std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
+                hidden_function::print_path(i, node_idx, prev);
+                std::cout << n << "\n";
+            }
+        }
+
+        void Bellman_Ford_old(int n){
+            int node_idx[this->count];
+            weight_type dist[this->count];
+            int prev[this->count];
+            node_idx[0] = n;
+            dist[0] = 0;
+            prev[0] = -1;
+            Node2* a = this->root;
+            int i = 1;
+            while (a != NULL){
+                if (a->data == n){
+                    a = a->next;
+                    continue;
+                }
+                prev[i] = -1;
+                node_idx[i] = a->data;
+                dist[i] = inf;
+                i++;
+                a = a->next;
             }
             bool key = false;
             while (key == false){
@@ -837,7 +907,7 @@ class Graph{
                     }
                 }
             }
-            /*
+            
             for (int i=0; i<this->count; i++){
                 std::cout << node_idx[i] << " ";
             }
@@ -850,7 +920,6 @@ class Graph{
                 std::cout << dist[i] << " ";
             }
             std::cout << "\n";
-            */
             std::cout << "Bellman-Ford algorithm:\n";
             for (int i=1; i<this->count; i++){
                 std::cout<<"From "<< n <<" to "<<node_idx[i]<<": ";
