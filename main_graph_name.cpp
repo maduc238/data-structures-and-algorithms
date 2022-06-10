@@ -1,0 +1,61 @@
+#include <iostream>
+#include "graph_with_name.hpp"
+
+int main(){
+    Graph G;
+    G.add_node(0, "Na Hang, Tuyen Quang");
+    G.add_node(1, "Lam Binh, Tuyen Quang");
+    G.add_node(2, "Chiem Hoa, Tuyen Quang");
+    G.add_node(3, "Ham Yen, Tuyen Quang");
+    G.add_node(4, "Yen Son, Tuyen Quang");
+    G.add_node(5, "Tp Tuyen Quang, Tuyen Quang");
+    G.add_node(6, "Son Duong, Tuyen Quang");
+    G.add_node(7, "Yen Binh, Yen Bai");
+    G.add_node(8, "Doan Hung, Phu Tho");
+    G.add_node(9, "Tp Yen Bai, Yen Bai");
+    G.add_node(10, "Luc Yen, Yen Bai");
+    G.add_node(11, "Bac Quang, Ha Giang");
+    G.add_node(12, "Vi Xuyen, Ha Giang");
+    G.add_node(13, "Tp Ha Giang, Ha Giang");
+    G.add_node(14, "Bac Me, Ha Giang");
+    G.add_node(15, "Bao Lam, Cao Bang");
+    G.add_node(16, "Bao Lac, Cao Bang");
+    G.add_node(17, "Pac Nam, Bac Kan");
+    G.add_node(18, "Ba Be, Bac Kan");
+    G.add_node(19, "Cho Don, Bac Kan");
+    G.add_node(20, "Dinh Hoa, Thai Nguyen");
+    G.add_edge(0,1,38.2);
+    G.add_edge(0,2,40.5);
+    G.add_edge(1,2,53.7);
+    G.add_edge(2,3,43.1);
+    G.add_edge(2,4,45.9);
+    G.add_edge(3,4,29.5);
+    G.add_edge(4,5,10.2);
+    G.add_edge(5,6,23.8);
+    G.add_edge(5,7,47.4);
+    G.add_edge(5,8,26.9);
+    G.add_edge(7,9,11.0);
+    G.add_edge(7,10,65.1);
+    G.add_edge(10,3,88.2);
+    G.add_edge(10,11,80.3);
+    G.add_edge(3,11,55.9);
+    G.add_edge(1,11,74.3);
+    G.add_edge(11,12,39.7);
+    G.add_edge(12,13,18.5);
+    G.add_edge(13,14,60.7);
+    G.add_edge(0,14,106.0);
+    G.add_edge(14,15,30.7);
+    G.add_edge(15,16,40.0);
+    G.add_edge(16,17,68.5);
+    G.add_edge(17,18,31.5);
+    G.add_edge(18,0,86.4);
+    G.add_edge(18,19,60.1);
+    G.add_edge(19,0,64.4);
+    G.add_edge(19,2,55.0);
+    G.add_edge(19,20,44.7);
+    G.add_edge(20,6,41.7);
+    G.print_graph_data();
+    //G.Dijkstra(0);
+    //G.Bellman_Ford(0);
+    return 0;
+}
